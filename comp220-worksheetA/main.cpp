@@ -96,17 +96,17 @@ int main(int argc, char* args[])
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
 	//SDL Event structure, this will be checked in the while loop
-	SDL_Event ev;
+	SDL_Event event;
 	while (running)
 	{
 		//Poll for the events which have happened in this frame
-		while (SDL_PollEvent(&ev))
+		while (SDL_PollEvent(&event))
 		{
 			//The mouse offsets
 			int x = 0, y = 0;
 
 			//Switch case for every message we are intereted in
-			switch (ev.type)
+			switch (event.type)
 			{
 				//QUIT Message, usually called when the window has been closed
 			case SDL_QUIT:
@@ -116,7 +116,7 @@ int main(int argc, char* args[])
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
 				//Check the actual key code of the key that has been pressed
-				switch (ev.key.keysym.sym)
+				switch (event.key.keysym.sym)
 				{
 					//Escape key
 				case SDLK_ESCAPE:
