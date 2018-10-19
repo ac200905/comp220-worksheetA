@@ -14,7 +14,7 @@ public:
 	int initSDL();
 
 	// If the window is currently fullscreen
-	bool isFullscreen;
+	bool isFullscreen = false;
 
 	// Get isFullscreen value
 	bool getIsFullscreen();
