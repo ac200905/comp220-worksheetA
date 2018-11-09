@@ -6,6 +6,7 @@ in vec2 vertexTextureCoordOut;
 
 uniform vec4 triangleColour; 
 uniform sampler2D baseTexture;
+uniform sampler2D baseTexture2;
 
 void main()
 {
