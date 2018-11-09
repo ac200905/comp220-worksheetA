@@ -4,6 +4,7 @@
 layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in vec4 vertexColour;
 
+
 out vec3 vertColor;
 
 //uniform vec3 myVariable;

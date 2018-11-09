@@ -8,22 +8,19 @@ public:
 	Game();
 	~Game();
 
-	void handleEvents();
+	void gameInit();
 
-	void update();
+	void gameLoop();
 
-	void render();
+	void gameClean();
 
-	void clean();
+	bool running = true;
 
-	bool running()
-	{
-		return isRunning;
-	}
+
 
 
 private:
 
-	bool isRunning;
+
 
 };

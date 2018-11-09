@@ -11,19 +11,19 @@ Game::~Game()
 {
 }
 
-void Game::handleEvents()
+void Game::gameInit()
 {
+	
 }
 
-void Game::update()
+void Game::gameLoop()
 {
+
+	
 }
 
-void Game::render()
+void Game::gameClean()
 {
-}
 
-void Game::clean()
-{
 }
 

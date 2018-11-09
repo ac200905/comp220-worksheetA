@@ -5,92 +5,88 @@
 
 int main(int argc, char* args[])
 {
-	//Create SDL window
+	
+	// Transfer this to gameLoop in Game.cpp
+
+	// Create SDL window
 	Window window = Window("Main Window");
 	SDL_Window* mainWindow = window.getWindow();
 
 
-	//Initalise Open_GL and GLEW
+	// Initalise Open_GL and GLEW
 	GLSetup glSetup = GLSetup(mainWindow);
-	//Get Open_GL context.
+	// Get Open_GL context.
 	SDL_GLContext gl_Context = glSetup.getGLContext();
 
 
-	//Vertex array
-	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+
+	//Mouse setup, can probably be moved to sdl init?
+	SDL_ShowCursor(0);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	//Init deltaTime
+	float deltaTime = 0.0f;	// Time between this frame and last frame
+	float lastFrame = 0.0f; // Time of last frame
 
 
-	// An array of 4 vectors which represents 8 vertices
-	// {x,y,z,r,g,b,a}
-	static const Vertex cubeVertexArray[] =
-	{
-		{ -0.5f,-0.5f,0.0f,  1.0f,0.0f,1.0f,1.0f },
-		{ 0.5f,-0.5f,0.0f,  0.0f,1.0f,1.0f,1.0f },
-		{ 0.5f,0.5f,0.0f,  1.0f,1.0f,0.0f,1.0f },
-		{ -0.5f,0.5f,0.0f,  1.0f,1.0f,1.0f,1.0f },
 
-		{ -0.5f,-0.5f,-1.0f,  1.0f,0.0f,0.0f,1.0f },
-		{ 0.5f,-0.5f,-1.0f,  1.0f,1.0f,0.0f,1.0f },
-		{ 0.5f,0.5f,-1.0f,  0.0f,0.0f,1.0f,1.0f },
-		{ -0.5f,0.5f,-1.0f,  0.0f,1.0f,0.0f,1.0f }
+	//Load Mesh
+	MeshCollection * tankMesh = new MeshCollection();
+	loadMeshFromFile("Tank1.FBX", tankMesh);
 
-	};
 
-	// Indicies must be set in anti-clockwise if on the outside of the cube order due to back-face culling
-	static const int cubeIndiciesArray[] =
-	{
-		0,1,2, // Represenative of one triangle
-		2,3,0,
+	GLuint textureID = loadTextureFromFile("Tank1DF.png");
 
-		6,5,4,
-		4,7,6,
 
-		7,3,2,
-		2,6,7,
+	GLuint programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 
-		6,2,1,
-		1,5,6,
-
-		3,7,4,
-		4,0,3,
-
-		1,0,5,
-		5,0,4
-	};
-
-	// Culls the clockwise facing side of the triangle
-	glEnable(GL_CULL_FACE);
-
-	// This will identify our vertex buffer
-	GLuint vertexbuffer;
-	// Generate 1 buffer, put the resulting identifier in vertexbuffer
-	glGenBuffers(1, &vertexbuffer);
-	// The following commands will talk about our 'vertexbuffer' buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, (8 * sizeof(Vertex)), cubeVertexArray, GL_STATIC_DRAW);
-
-	GLuint elementbuffer;
-	// Generate 1 buffer, put the resulting identifier in elementbuffer
-	glGenBuffers(1, &elementbuffer);
-	// The following commands will talk about our 'elementbuffer' buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	// Give our elements to OpenGL.
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (36 * sizeof(int)), cubeIndiciesArray, GL_STATIC_DRAW);
-
-	GLuint programID = LoadShaders("vertShader.glsl", "fragShader.glsl");
-
-	GLuint colourLocation = glGetUniformLocation(programID, "triangleColour");
-
-	// ModelMatrix setup. 
+	GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
+	//GLuint colourLocation = glGetUniformLocation(programID, "triangleColour");
+	
+	//Translation and scale
 	vec3 modelTranslation = vec3(0.0f, 0.0f, 0.0f);
-	vec3 modelRotation = vec3(0.0f, 0.0f, 0.0f);
 	vec3 modelScale = vec3(1.0f, 1.0f, 1.0f);
 
+	//Rotation
+	vec3 modelRotation = vec3(0.0f, 0.0f, 0.0f);
+	vec3 xAxis = vec3(1.0f, 0.0f, 0.0f);
+	vec3 yAxis = vec3(0.0f, 1.0f, 0.0f);
+	vec3 zAxis = vec3(0.0f, 0.0f, 1.0f);
+
+	//Transformation Matricies
+	mat4 translationMatrix = translate(modelTranslation);
+	mat4 rotationMatrix = rotate(modelRotation.x, xAxis) * rotate(modelRotation.y, yAxis) * rotate(modelRotation.z, zAxis);
+	mat4 scaleMatrix = scale(modelScale);
+	
+	//Caluclate modelMatrix
+	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
+
 	// Create Camera
-	Camera camera = Camera();
+	Camera* camera = new Camera();
+	camera->setFoV(90);
+	camera->setProjectionMatrix();
+	camera->setFullscreenProjectionMatrix();
+	camera->setViewMatrix();
+
+
+	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
+
+	
+	// Set up new input and PlayerController
+	InputSetup* input = new InputSetup();
+	PlayerController playerController = PlayerController(input, camera);
+
+	// Set up new game objects
+	GameObject* tank1 = new GameObject();
+	tank1->giveMesh(tankMesh);
+
+	GameObject* tank2 = new GameObject();
+	tank2->giveMesh(tankMesh);
+
+	GameObject* tank3 = new GameObject();
+	tank3->giveMesh(tankMesh);
+
+	float tankMoveSpeed = 0;
 
 	//Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -98,11 +94,14 @@ int main(int argc, char* args[])
 	SDL_Event event;
 	while (running)
 	{
+		//Update deltatime
+		float thisFrame = SDL_GetTicks();
+		deltaTime = thisFrame - lastFrame;
+		lastFrame = thisFrame;
+
 		//Poll for the events which have happened in this frame
 		while (SDL_PollEvent(&event))
 		{
-			//The mouse offsets
-			int x = 0, y = 0;
 
 			//Switch case for every message we are intereted in
 			switch (event.type)
@@ -114,7 +113,10 @@ int main(int argc, char* args[])
 
 				//KEYDOWN Message, called when a key has been pressed down
 			case SDL_KEYDOWN:
-				//Check the actual key code of the key that has been pressed
+
+				input->keyboardEvents(event);
+
+				//Check the key code of the key that has been pressed
 				switch (event.key.keysym.sym)
 				{
 					//Escape key
@@ -128,158 +130,159 @@ int main(int argc, char* args[])
 					{
 						window.setIsFullscreen();
 						glViewport(0, 0, global::SCREEN_WIDTH, global::SCREEN_HEIGHT);
+						camera->setProjectionMatrix();
 						SDL_SetWindowFullscreen(mainWindow, 0);
 					}
 					else
 					{
 						window.setIsFullscreen();
 						glViewport(0, 0, global::FULLSCREEN_WIDTH, global::FULLSCREEN_HEIGHT);
+						camera->setFullscreenProjectionMatrix();
 						SDL_SetWindowFullscreen(mainWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 					}
 					break;
-
-				case SDLK_RIGHT:
-					modelTranslation = modelTranslation - vec3(0.1, 0, 0);
-					break;
-
-				case SDLK_LEFT:
-					modelTranslation = modelTranslation + vec3(0.1, 0, 0);
-					break;
-
-				case SDLK_UP:
-					modelTranslation = modelTranslation - vec3(0, 0.1, 0);
-					break;
-
-				case SDLK_DOWN:
-					modelTranslation = modelTranslation + vec3(0, 0.1, 0);
-					break;
-
-				case SDLK_a:
-					modelRotation = modelRotation + vec3(0.0f, 0.1f, 0.0f);
-					break;
-
-				case SDLK_d:
-					modelRotation = modelRotation - vec3(0.0f, 0.1f, 0.0f);
-					break;
-
-				case SDLK_w:
-					modelRotation = modelRotation + vec3(0.1f, 0.0f, 0.0f);
-					break;
-
-				case SDLK_s:
-					modelRotation = modelRotation - vec3(0.1f, 0.0f, 0.0f);
-					break;
-
-				case SDLK_q:
-					modelRotation = modelRotation + vec3(0.0f, 0.0f, 0.1f);
-					break;
-
-				case SDLK_e:
-					modelRotation = modelRotation - vec3(0.0f, 0.0f, 0.1f);
-					break;
-
-				case SDLK_SPACE:
-					modelScale = modelScale + vec3(0.1f, 0.1f, 0.1f);
-					break;
-
-				case SDLK_LSHIFT:
-					modelScale = modelScale - vec3(0.1f, 0.1f, 0.1f);
-					break;
-
-				case SDL_MOUSEMOTION:
-					//mouseMotion = Vec2I(event.motion.x, event.motion.y);
-					break;
-
-
 				}
+			case SDL_KEYUP:
+				input->keyboardEvents(event);
+				break;
+
+			case SDL_MOUSEMOTION:
+				input->mouseInput(event.motion.xrel, event.motion.yrel);
+				playerController.mouseControls();
+				break;
+
+			case SDL_WINDOWEVENT:
+				//Check for window being resized
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					//Update size of screen variables <- needed for mouse calculations
+				}
+				break;
 			}
 		}
 
+		if (window.getIsFullscreen())
+		{
+			mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
+		}
+		if (!window.getIsFullscreen())
+		{
+			//Calculate MVP matrix
+			mat4 MVPMatrix = camera->getProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
+		}
+
+		//Handle keyboard input
+		playerController.keyboardControls(deltaTime);
+
+
+
+
+		//Calculate MVP matrix
+		mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
+
+
+		
 		//Do rendering here!
-		glClearColor(0.0, 1.0, 1.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// Culls the clockwise facing side of the triangle
+		glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
+		glClearColor(1.0, 1.0, 1.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearDepth(1.0f);
+
+
+		
 
 		// Linking shaders
 		glUseProgram(programID);
 
 
 
+		//If we want another texture do the following
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, anotherTextureID);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
 		//-------------------------------------
 		//-------------------------------------
 
+		
 
-
-		//Rotation Axes
-		vec3 xAxis = vec3(1.0f, 0.0f, 0.0f);
-		vec3 yAxis = vec3(0.0f, 1.0f, 0.0f);
-		vec3 zAxis = vec3(0.0f, 0.0f, 1.0f);
-
-		//Transformation Matrices 
-		mat4 translationMatrix = translate(modelTranslation);
-		mat4 scaleMatrix = scale(modelScale);
-		mat4 rotationMatrix = rotate(modelRotation.x, xAxis) * rotate(modelRotation.y, yAxis) * rotate(modelRotation.z, zAxis);
-
-		//Calculating the modelMatrix
-		mat4 modelMatrix = scaleMatrix * rotationMatrix *  translationMatrix;
-
-
-
-
-		//Calculate MVP matrix
-		mat4 MVPMatrix = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
+		
 
 		GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
-		GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
+		GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
+		GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+		
 
 		//Send Uniform Values
 
+		GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
+
+		glUniform1i(baseTextureLocation, 0);
 
 		//MVP matrix
 		glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
 
-		//Set triangle colour
-		glUniform4f(colourLocation, 0, 0, 1, 0);
+		//send the uniforms across
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera->getViewMatrix()));
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(camera->getProjectionMatrix()));
+		glUniform1i(baseTextureLocation, 0);
 
+		
+		tankMoveSpeed -= 0.01f;
+		
+		if (tank1)
+		{
 
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(tank1->modelMatrix));
 
-		// First attribute buffer : vertices
-		// Describe first element in the vertex - For x,y,z
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			sizeof(Vertex),     // stride, how big one vertex is 
-			(void*)0            // array buffer offset
-		);
+			tank1->scale = vec3(1.0f);
+			tank1->position = vec3(tankMoveSpeed, 0, 0);
+			tank1->update();
+			tank1->render();
+		}
 
-		// Describe second element in the vertex - For r,g,b,a
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(
-			1,							// attribute 1, must match the layout in the shader.
-			4,							// size
-			GL_FLOAT,					// type
-			GL_FALSE,					// normalized?
-			sizeof(Vertex),				// stride, how big one vertex is //change to sizeof(Vertex)
-			(void*)(3 * sizeof(float))  // array buffer offset
-		);
+		if (tank2)
+		{
+			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(tank2->modelMatrix));
 
+			tank2->rotation.y -= 0.01;
+			tank2->scale = vec3(1.0f);
+			tank2->position = vec3(0, 0, -10);
+			tank2->update();
+			tank2->render();
+		}
 
-		// Draw the triangle !
-		//glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-		glDisableVertexAttribArray(0);
+		if (tank3)
+		{
 
+			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(tank3->modelMatrix));
+
+			tank3->rotation.y += 0.01;
+			tank3->scale = vec3(1.0f);
+			tank3->position = vec3(0, 0, 10);
+			tank3->update();
+			tank3->render();
+		}
+		
 
 		// Screen refresh
 		SDL_GL_SwapWindow(mainWindow);
 	}
 
+	if (tankMesh)
+	{
+		delete tankMesh;
+		tankMesh = nullptr;
+	}
+
+
 	glDeleteProgram(programID);
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
+
+	glDeleteTextures(1, &textureID);
 
 	//Delete Context
 	SDL_GL_DeleteContext(gl_Context);
@@ -289,6 +292,6 @@ int main(int argc, char* args[])
 	SDL_DestroyWindow(mainWindow);
 	//https://wiki.libsdl.org/SDL_Quit
 	SDL_Quit();
-
+	
 	return 0;
 }
