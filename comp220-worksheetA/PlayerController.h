@@ -18,7 +18,7 @@ public:
 	// Manage mouse inputs
 	void mouseControls();
 
-	void joystickControls(float deltaTime);
+	void joystickControls();
 
 private:
 	InputSetup *input;

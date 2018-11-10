@@ -132,7 +132,7 @@ int main(int argc, char* args[])
 						if (event.caxis.value < -32000)
 						{
 
-							std::cout << event.caxis.value << std::endl;
+							
 							std::cout << "left!!!!." << std::endl;
 							moveCameraLeft = true;
 							moveCameraRight = false;
@@ -225,16 +225,11 @@ int main(int argc, char* args[])
 				playerController.mouseControls();
 				break;
 
-			case SDL_JOYAXISMOTION:
-				input->joystickInput(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
-				std::cout << "moving controller." << std::endl;
-				//playerController.mouseControls();
-				break;
 /*
 			case SDL_CONTROLLERAXISMOTION:
 				input->controllerInput(event.caxis.which, event.caxis.axis, event.caxis.value);
 				std::cout << "moving controller." << std::endl;
-				playerController.mouseControls();
+				//playerController.joystickControls();
 				break;*/
 			}
 			
@@ -267,10 +262,12 @@ int main(int argc, char* args[])
 		{
 			camera->increasePitch(2);
 		}
+
 		// Handle keyboard input
 		playerController.keyboardControls(deltaTime);
 
-		playerController.joystickControls(deltaTime);
+		// Handle joystick input
+		playerController.joystickControls();
 
 		
 		// Calculate MVP matrix
