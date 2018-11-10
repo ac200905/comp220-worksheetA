@@ -51,6 +51,24 @@ public:
 		yaw += Yaw;
 	}
 
+	void moveXAxis(float Position)
+	{
+		setPosition(position - (normalize(cross(target,getUpVector()))* Position));
+		setViewMatrix();
+	}
+
+	void moveZAxis(float Position)
+	{
+		setPosition(position + (Position * target));
+		setViewMatrix();
+	}
+
+	void moveYAxis(float Position)
+	{
+		setPosition(position + (vec3(0, 1, 0) * Position));
+		setViewMatrix();
+	}
+
 	vec3 getPosition()
 	{
 		return position;

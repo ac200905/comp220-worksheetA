@@ -34,6 +34,8 @@ void InputSetup::joystickInit()
 		{
 			printf("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
 		}
+
+		
 	}
 }
 

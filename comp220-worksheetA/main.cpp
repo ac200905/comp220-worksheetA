@@ -101,8 +101,17 @@ int main(int argc, char* args[])
 
 	float tankMoveSpeed = 0;
 	float jetMoveSpeed = 0;
+
+	bool rotateCameraLeft = false;
+	bool rotateCameraRight = false;
+	bool rotateCameraUp = false;
+	bool rotateCameraDown = false;
+
 	bool moveCameraLeft = false;
 	bool moveCameraRight = false;
+	bool moveCameraForward = false;
+	bool moveCameraBack = false;
+
 	bool moveCameraUp = false;
 	bool moveCameraDown = false;
 
@@ -121,26 +130,22 @@ int main(int argc, char* args[])
 		// Poll for the events which have happened in this frame
 		while (SDL_PollEvent(&event))
 		{
+			// Testing controller - should be refactored to player controller
 			std::cout << event.caxis.value << std::endl;
-			//event.caxis.value = 0;
 			if (SDL_CONTROLLERAXISMOTION)
 			{
 				if (event.caxis.which == 0)
 				{
+					// Left analog stick
 					if (event.caxis.axis == 0)
 					{
 						if (event.caxis.value < -32000)
 						{
-
-							
-							std::cout << "left!!!!." << std::endl;
 							moveCameraLeft = true;
 							moveCameraRight = false;
 						}
 						else if (event.caxis.value > 32000)
 						{
-
-							std::cout << "riiiight!!!!!!!" << std::endl;
 							moveCameraLeft = false;
 							moveCameraRight = true;
 						}
@@ -149,32 +154,93 @@ int main(int argc, char* args[])
 							moveCameraLeft = false;
 							moveCameraRight = false;
 						}
-
 					}
 					if (event.caxis.axis == 1)
 					{
 						if (event.caxis.value < -32000)
 						{
-
-							std::cout << "UUUUUUUUUP!!!!." << std::endl;
-							moveCameraUp = true;
-							moveCameraDown = false;
+							moveCameraForward = true;
+							moveCameraBack = false;
 						}
 						else if (event.caxis.value > 32000)
 						{
+							moveCameraBack = true;
+							moveCameraForward = false;
+						}
+						else
+						{
+							moveCameraBack = false;
+							moveCameraForward = false;
+						}
+					}
 
-							std::cout << "DOOOOOOOOOOOOOWN" << std::endl;
-							moveCameraDown = true;
-							moveCameraUp = false;
+					// Right analog stick
+					if (event.caxis.axis == 3)
+					{
+						if (event.caxis.value < -32000)
+						{
+							rotateCameraLeft = true;
+							rotateCameraRight = false;
+						}
+						else if (event.caxis.value > 32000)
+						{
+							rotateCameraLeft = false;
+							rotateCameraRight = true;
+						}
+						else
+						{
+							rotateCameraLeft = false;
+							rotateCameraRight = false;
+						}
+					}
+					if (event.caxis.axis == 4)
+					{
+						if (event.caxis.value < -32000)
+						{
+							rotateCameraUp = true;
+							rotateCameraDown = false;
+						}
+						else if (event.caxis.value > 32000)
+						{
+							rotateCameraDown = true;
+							rotateCameraUp = false;
+						}
+						else
+						{
+							rotateCameraUp = false;
+							rotateCameraDown = false;
+						}
+					}
+
+					// Left trigger
+					if (event.caxis.axis == 5)
+					{
+						if (event.caxis.value > 32000)
+						{
+							moveCameraUp = true;
+							moveCameraDown = false;
 						}
 						else
 						{
 							moveCameraUp = false;
 							moveCameraDown = false;
 						}
-
+					}
+					if (event.caxis.axis == 2)
+					{
+						if (event.caxis.value > 32000)
+						{
+							moveCameraUp = false;
+							moveCameraDown = true;
+						}
+						else
+						{
+							moveCameraUp = false;
+							moveCameraDown = false;
+						}
 					}
 				}
+				
 			}
 			// Switch case for every message we are intereted in
 			switch (event.type)
@@ -224,16 +290,14 @@ int main(int argc, char* args[])
 				input->mouseInput(event.motion.xrel, event.motion.yrel);
 				playerController.mouseControls();
 				break;
-
 /*
 			case SDL_CONTROLLERAXISMOTION:
 				input->controllerInput(event.caxis.which, event.caxis.axis, event.caxis.value);
 				std::cout << "moving controller." << std::endl;
 				//playerController.joystickControls();
-				break;*/
-			}
-			
-				
+				break;
+*/
+			}	
 		}
 
 		if (window.getIsFullscreen())
@@ -246,22 +310,52 @@ int main(int argc, char* args[])
 			mat4 MVPMatrix = camera->getProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 		}
 
-		if (moveCameraLeft == true)
+		// Changing camera pitch and yaw
+		if (rotateCameraLeft == true)
 		{
 			camera->increaseYaw(-2);
 		}
-		if (moveCameraRight == true)
+		if (rotateCameraRight == true)
 		{
 			camera->increaseYaw(2);
 		}
-		if (moveCameraUp == true)
+		if (rotateCameraUp == true)
 		{
 			camera->increasePitch(-2);
 		}
-		if (moveCameraDown == true)
+		if (rotateCameraDown == true)
 		{
 			camera->increasePitch(2);
 		}
+
+		// Strafing and moving towards or away from target
+		if (moveCameraLeft == true)
+		{
+			camera->moveXAxis(1);
+		}
+		if (moveCameraRight == true)
+		{
+			camera->moveXAxis(-1);
+		}
+		if (moveCameraForward == true)
+		{
+			camera->moveZAxis(1);
+		}
+		if (moveCameraBack == true)
+		{
+			camera->moveZAxis(-1);
+		}
+
+		// Moving camera up/down
+		if (moveCameraUp == true)
+		{
+			camera->moveYAxis(1);
+		}
+		if (moveCameraDown == true)
+		{
+			camera->moveYAxis(-1);
+		}
+
 
 		// Handle keyboard input
 		playerController.keyboardControls(deltaTime);
@@ -316,7 +410,7 @@ int main(int argc, char* args[])
 
 
 		// Manipulating game objects
-		tankMoveSpeed -= 0.01f;
+		tankMoveSpeed -= 0.1f;
 		jetMoveSpeed -= 0.2f;
 
 		if (tank1)
@@ -325,9 +419,13 @@ int main(int argc, char* args[])
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank1->modelMatrix));
 
 			tank1->scale = vec3(1.0f);
-			tank1->position = vec3(tankMoveSpeed, 0, 0);
+			tank1->position = vec3(50+tankMoveSpeed, 0, 0);
 			tank1->update();
 			tank1->render();
+			if (tank1->position.x < -50)
+			{
+				tankMoveSpeed = 0;
+			}
 		}
 
 		if (tank2)
@@ -360,9 +458,9 @@ int main(int argc, char* args[])
 
 			penguin->rotation.x = -1.55;
 			penguin->rotation.z = -1.5;
-			penguin->rotation.y -= 0.05;
+			penguin->rotation.y -= 0.02;
 			penguin->scale = vec3(2.0f);
-			penguin->position = vec3(5, 5, 0);
+			penguin->position = vec3(5, 5, 50);
 			penguin->update();
 			penguin->render();
 		}
@@ -372,14 +470,18 @@ int main(int argc, char* args[])
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(jet->modelMatrix));
 			// Send jet texture
 			glUniform1i(baseTextureLocation, 2);
-
+			if (jet->position.z >= 100)
+			{
+				jetMoveSpeed = 0;
+			}
 			jet->rotation.x = -1.6;
 			jet->rotation.z = 0;
 			jet->rotation.y += 0.04;
 			jet->scale = vec3(0.3f);
-			jet->position = vec3(20, 10, -100-jetMoveSpeed);
+			jet->position = vec3(20, 10, -100 - jetMoveSpeed);
 			jet->update();
 			jet->render();
+			
 		}
 
 		// Screen refresh

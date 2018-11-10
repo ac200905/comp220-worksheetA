@@ -25,6 +25,7 @@ public:
 	void joystickInit();
 
 	SDL_Joystick* joystickController;
+	SDL_Joystick* joystickController2;
 
 	void joystickInput(int which, int axis, int value);
 
