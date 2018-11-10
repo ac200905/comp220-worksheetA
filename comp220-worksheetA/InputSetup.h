@@ -22,6 +22,14 @@ public:
 	// Handle mouse input (change camera yaw/pitch)
 	void mouseInput(float xPos, float yPos);
 
+	void joystickInit();
+
+	SDL_Joystick* joystickController;
+
+	void joystickInput(int which, int axis, int value);
+
+	void controllerInput(int which, int axis, float value);
+
 	// Clear map of events
 	void clearEvents()
 	{
@@ -39,7 +47,6 @@ public:
 	{
 		return keyStates[key] == SDL_PRESSED;
 	}
-
 	
 	float getYOffset()
 	{

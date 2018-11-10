@@ -87,3 +87,19 @@ void PlayerController::mouseControls()
 	// Calculate new camera rotation
 	playerCamera->calculateCameraRotation();
 }
+
+void PlayerController::joystickControls(float deltaTime)
+{
+	//joySpeed = 0 * deltaTime;
+	// Update camera yaw and pitch
+	playerCamera->increaseYaw(0);
+	playerCamera->increasePitch(0);
+
+	// Constrain camera pitch
+	playerCamera->checkPitchConstraints();
+
+	// Calculate new camera rotation
+	playerCamera->calculateCameraRotation();
+
+	
+}

@@ -81,6 +81,8 @@ int main(int argc, char* args[])
 	InputSetup* input = new InputSetup();
 	PlayerController playerController = PlayerController(input, camera);
 
+	input->joystickInit();
+
 	// Set up new game objects
 	GameObject* tank1 = new GameObject();
 	tank1->giveMesh(tankMesh);
@@ -99,6 +101,10 @@ int main(int argc, char* args[])
 
 	float tankMoveSpeed = 0;
 	float jetMoveSpeed = 0;
+	bool moveCameraLeft = false;
+	bool moveCameraRight = false;
+	bool moveCameraUp = false;
+	bool moveCameraDown = false;
 
 	// Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
 	bool running = true;
@@ -106,6 +112,7 @@ int main(int argc, char* args[])
 	SDL_Event event;
 	while (running)
 	{
+		
 		// Update deltatime
 		float thisFrame = SDL_GetTicks();
 		deltaTime = thisFrame - lastFrame;
@@ -114,7 +121,61 @@ int main(int argc, char* args[])
 		// Poll for the events which have happened in this frame
 		while (SDL_PollEvent(&event))
 		{
+			std::cout << event.caxis.value << std::endl;
+			//event.caxis.value = 0;
+			if (SDL_CONTROLLERAXISMOTION)
+			{
+				if (event.caxis.which == 0)
+				{
+					if (event.caxis.axis == 0)
+					{
+						if (event.caxis.value < -32000)
+						{
 
+							std::cout << event.caxis.value << std::endl;
+							std::cout << "left!!!!." << std::endl;
+							moveCameraLeft = true;
+							moveCameraRight = false;
+						}
+						else if (event.caxis.value > 32000)
+						{
+
+							std::cout << "riiiight!!!!!!!" << std::endl;
+							moveCameraLeft = false;
+							moveCameraRight = true;
+						}
+						else
+						{
+							moveCameraLeft = false;
+							moveCameraRight = false;
+						}
+
+					}
+					if (event.caxis.axis == 1)
+					{
+						if (event.caxis.value < -32000)
+						{
+
+							std::cout << "UUUUUUUUUP!!!!." << std::endl;
+							moveCameraUp = true;
+							moveCameraDown = false;
+						}
+						else if (event.caxis.value > 32000)
+						{
+
+							std::cout << "DOOOOOOOOOOOOOWN" << std::endl;
+							moveCameraDown = true;
+							moveCameraUp = false;
+						}
+						else
+						{
+							moveCameraUp = false;
+							moveCameraDown = false;
+						}
+
+					}
+				}
+			}
 			// Switch case for every message we are intereted in
 			switch (event.type)
 			{
@@ -163,7 +224,21 @@ int main(int argc, char* args[])
 				input->mouseInput(event.motion.xrel, event.motion.yrel);
 				playerController.mouseControls();
 				break;
+
+			case SDL_JOYAXISMOTION:
+				input->joystickInput(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+				std::cout << "moving controller." << std::endl;
+				//playerController.mouseControls();
+				break;
+/*
+			case SDL_CONTROLLERAXISMOTION:
+				input->controllerInput(event.caxis.which, event.caxis.axis, event.caxis.value);
+				std::cout << "moving controller." << std::endl;
+				playerController.mouseControls();
+				break;*/
 			}
+			
+				
 		}
 
 		if (window.getIsFullscreen())
@@ -176,9 +251,28 @@ int main(int argc, char* args[])
 			mat4 MVPMatrix = camera->getProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 		}
 
+		if (moveCameraLeft == true)
+		{
+			camera->increaseYaw(-2);
+		}
+		if (moveCameraRight == true)
+		{
+			camera->increaseYaw(2);
+		}
+		if (moveCameraUp == true)
+		{
+			camera->increasePitch(-2);
+		}
+		if (moveCameraDown == true)
+		{
+			camera->increasePitch(2);
+		}
 		// Handle keyboard input
 		playerController.keyboardControls(deltaTime);
 
+		playerController.joystickControls(deltaTime);
+
+		
 		// Calculate MVP matrix
 		mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 

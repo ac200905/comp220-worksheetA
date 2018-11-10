@@ -18,6 +18,8 @@ public:
 	// Manage mouse inputs
 	void mouseControls();
 
+	void joystickControls(float deltaTime);
+
 private:
 	InputSetup *input;
 
@@ -28,4 +30,6 @@ private:
 
 	//How fast the player can move
 	float moveSpeed;
+
+	float joySpeed;
 };
