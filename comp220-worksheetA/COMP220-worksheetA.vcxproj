@@ -122,7 +122,7 @@ xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x86\*.dll "$(OutDir)\*.dll"</Co
     </Link>
     <PostBuildEvent>
       <Command>copy ..\Libraries\glew-2.1.0\bin\Release\x64\glew32.dll "$(OutDir)\glew32.dll"
-copy ..\Libraries\SDL2-2.0.6\lib\x64\SDL2.dll "$(OutDir)\SDL2.dll"
+copy ..\Libraries\SDL2-2.0.8\lib\x64\SDL2.dll "$(OutDir)\SDL2.dll"
 xcopy /Y /D /I ..\Libraries\SDL2_image-2.0.3\lib\x64\*.dll "$(OutDir)\*.dll"
 copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc140-mt.dll"</Command>
     </PostBuildEvent>
