@@ -410,8 +410,8 @@ int main(int argc, char* args[])
 
 
 		// Manipulating game objects
-		tankMoveSpeed -= 0.1f;
-		jetMoveSpeed -= 0.2f;
+		tankMoveSpeed -= 0.01f * deltaTime;
+		jetMoveSpeed -= 0.02f * deltaTime;
 
 		if (tank1)
 		{
@@ -432,7 +432,7 @@ int main(int argc, char* args[])
 		{
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank2->modelMatrix));
 
-			tank2->rotation.y -= 0.01;
+			tank2->rotation.y -= 0.0002 * deltaTime;
 			tank2->scale = vec3(1.0f);
 			tank2->position = vec3(0, 0, -10);
 			tank2->update();
@@ -443,7 +443,7 @@ int main(int argc, char* args[])
 		{
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank3->modelMatrix));
 
-			tank3->rotation.y += 0.01;
+			tank3->rotation.y += 0.0002 * deltaTime;
 			tank3->scale = vec3(1.0f);
 			tank3->position = vec3(0, 0, 10);
 			tank3->update();
@@ -458,7 +458,7 @@ int main(int argc, char* args[])
 
 			penguin->rotation.x = -1.55;
 			penguin->rotation.z = -1.5;
-			penguin->rotation.y -= 0.02;
+			penguin->rotation.y -= 0.004 * deltaTime;
 			penguin->scale = vec3(2.0f);
 			penguin->position = vec3(5, 5, 50);
 			penguin->update();
@@ -476,7 +476,7 @@ int main(int argc, char* args[])
 			}
 			jet->rotation.x = -1.6;
 			jet->rotation.z = 0;
-			jet->rotation.y += 0.04;
+			jet->rotation.y += 0.0008 * deltaTime;
 			jet->scale = vec3(0.3f);
 			jet->position = vec3(20, 10, -100 - jetMoveSpeed);
 			jet->update();
