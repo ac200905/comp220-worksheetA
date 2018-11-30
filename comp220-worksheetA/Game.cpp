@@ -33,19 +33,20 @@ void Game::gameInit()
 
 	bool running = true;
 
-	tankMesh = new MeshCollection();
-	loadMeshFromFile("Tank1.FBX", tankMesh);
+	treeMesh = new MeshCollection();
+	loadMeshFromFile("lowpolytree.fbx", treeMesh);
 
 	// Textures
-	textureID_01 = loadTextureFromFile("Tank1DF.png");
+	textureID_tree = loadTextureFromFile("tree.png");
 
 	// Load shaders
 	programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 
 
 	// Set up new game objects
-	tank1 = new GameObject();
-	tank1->giveMesh(tankMesh);
+	tree1 = new GameObject();
+	tree1->giveMesh(treeMesh);
+	tree1->setRotation(-1.55, 0, 0);
 
 	
 
@@ -198,7 +199,8 @@ void Game::gameRender()
 
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID_01);
+	glBindTexture(GL_TEXTURE_2D, textureID_tree);
+
 
 	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
 
@@ -218,18 +220,18 @@ void Game::gameRender()
 	glUniform1i(baseTextureLocation, 0);
 
 	//MVP matrix
-	glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
+	//glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
 	
-	if (tank1)
+	if (tree1)
 	{
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank1->modelMatrix));
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
 
-		tank1->scale = vec3(1.0f);
-		tank1->position = vec3(20, 0, 0);
-		tank1->update();
-		tank1->render();
-		
+		tree1->scale = vec3(1.0f);
+		tree1->position = vec3(20, 0, 0);
+		tree1->update();
+		tree1->render();
+
 	}
 	
 
@@ -419,7 +421,7 @@ void Game::gameClean()
 {
 	glDeleteProgram(programID);
 
-	glDeleteTextures(1, &textureID_01);
+	glDeleteTextures(1, &textureID_tree);
 
 
 	//Delete Context
@@ -436,10 +438,10 @@ void Game::gameClean()
 		window = nullptr;
 	}
 
-	if (tankMesh)
+	if (treeMesh)
 	{
-		delete tankMesh;
-		tankMesh = nullptr;
+		delete treeMesh;
+		treeMesh = nullptr;
 	}
 
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!

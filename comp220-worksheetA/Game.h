@@ -85,7 +85,7 @@ private:
 
 	SDL_Event event;
 
-	MeshCollection * tankMesh;
+	MeshCollection * treeMesh;
 
 	InputSetup* input;
 
@@ -93,9 +93,9 @@ private:
 
 	Camera* camera;
 
-	GameObject* tank1;
+	GameObject* tree1;
 
-	GLuint textureID_01;
+	GLuint textureID_tree;
 
 	GLuint programID;
 

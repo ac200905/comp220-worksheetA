@@ -18,17 +18,7 @@ public:
 	GameObject();
 	~GameObject();
 
-	MeshCollection * newModel;
-
-	void update();
-
-	void render();
-
-	// Give the GameObject a loaded mesh
-	void giveMesh(MeshCollection *mesh)
-	{
-		newModel = mesh;
-	};
+	MeshCollection * newMesh;
 
 	mat4 translationMatrix;
 	mat4 rotationMatrix;
@@ -40,4 +30,44 @@ public:
 	vec3 position = vec3(0.0f, 0.0f, 0.0f);
 	vec3 rotation = vec3(0.0f, 0.0f, 0.0f);
 	vec3 scale = vec3(1.0f, 1.0f, 1.0f);
+
+	void update();
+
+	void render();
+
+	// Give the GameObject a loaded mesh
+	void giveMesh(MeshCollection *mesh)
+	{
+		newMesh = mesh;
+	};
+
+	void setPosition(float x, float y, float z)
+	{
+		position = vec3(x, y, z);
+	};
+
+	void setRotation(float x, float y, float z)
+	{
+		rotation = vec3(x, y, z);
+	};
+
+	void setScale(float x, float y, float z)
+	{
+		scale = vec3(x, y, z);
+	};
+
+	vec3 getPosition()
+	{
+		return position;
+	}
+
+	vec3 getRotation()
+	{
+		return rotation;
+	}
+
+	vec3 getScale()
+	{
+		return scale;
+	}
 };

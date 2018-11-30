@@ -33,5 +33,5 @@ void GameObject::update()
 void GameObject::render()
 {
 	// Render the object
-	newModel->render();
+	newMesh->render();
 }
