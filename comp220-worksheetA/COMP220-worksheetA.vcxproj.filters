@@ -107,5 +107,7 @@
     <None Include="vertShader.glsl" />
     <None Include="vertTextured.glsl" />
     <None Include="fragTextured.glsl" />
+    <None Include="vertBlinnPhong.glsl" />
+    <None Include="fragBlinnPhong.glsl" />
   </ItemGroup>
 </Project>

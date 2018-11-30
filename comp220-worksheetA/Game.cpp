@@ -40,13 +40,17 @@ void Game::gameInit()
 	textureID_tree = loadTextureFromFile("tree.png");
 
 	// Load shaders
-	programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
+	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
+	programID = LoadShaders("vertBlinnPhong.glsl", "fragBlinnPhong.glsl");
 
 
 	// Set up new game objects
 	tree1 = new GameObject();
 	tree1->giveMesh(treeMesh);
-	tree1->setRotation(-1.55, 0, 0);
+
+	tree2 = new GameObject();
+	tree2->giveMesh(treeMesh);
+	
 
 	
 
@@ -55,6 +59,8 @@ void Game::gameInit()
 	camera->setProjectionMatrix();
 	camera->setFullscreenProjectionMatrix();
 	camera->setViewMatrix();
+
+	cameraPosition = camera->getPosition();
 
 	input = new InputSetup();
 
@@ -188,6 +194,17 @@ void Game::gameRender()
 	// Caluclate modelMatrix
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
+	// Materials
+	vec4 ambientMaterialColour = vec4(0.1f, 0.0f, 0.0f, 1.0f);
+	vec4 diffuseMaterialColour = vec4(0.8f, 0.0f, 0.0f, 1.0f);
+
+	// Light
+	vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
+
+
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
 	glClearColor(0.0f, 1.0, 1.0, 1.0);
@@ -202,15 +219,20 @@ void Game::gameRender()
 	glBindTexture(GL_TEXTURE_2D, textureID_tree);
 
 
-	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
-
-
+	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-
 	GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
 
+	
+	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
+	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
+	
+	GLint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
+	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
+
+	GLint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
 
 	// Send the uniforms across
 
@@ -218,6 +240,14 @@ void Game::gameRender()
 	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
 	glUniform1i(baseTextureLocation, 0);
+
+	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
+	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
+
+	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
+	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
+
+	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
 
 	//MVP matrix
 	//glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
@@ -228,9 +258,23 @@ void Game::gameRender()
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
 
 		tree1->scale = vec3(1.0f);
-		tree1->position = vec3(20, 0, 0);
+		tree1->position = vec3(0, 0, -5);
+		tree1->setRotation(-1.55, 0, 0);
 		tree1->update();
 		tree1->render();
+
+	}
+
+	if (tree2)
+	{
+
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
+
+		tree2->scale = vec3(1.0f);
+		tree2->position = vec3(5, 0, 4);
+		tree2->setRotation(-1.55, 0, 0);
+		tree2->update();
+		tree2->render();
 
 	}
 	

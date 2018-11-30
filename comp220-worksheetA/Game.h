@@ -94,6 +94,7 @@ private:
 	Camera* camera;
 
 	GameObject* tree1;
+	GameObject* tree2;
 
 	GLuint textureID_tree;
 
@@ -105,10 +106,14 @@ private:
 
 	mat4 MVPMatrix;
 
+	vec4 ambientMaterialColour;
+
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;
 	GLuint projectionMatrixLocation;
 
 	GLint baseTextureLocation;
+
+	glm::vec3 cameraPosition;
 
 };
