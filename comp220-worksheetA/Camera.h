@@ -4,7 +4,11 @@
 #include <glm\gtx\transform.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <iostream>
-#include "main.h"
+//#include "main.h"
+
+#include "Window.h"
+
+using namespace glm;
 
 class Camera
 {

@@ -1,5 +1,8 @@
 #pragma once
-#include "main.h"
+#include <SDL.h>
+#include <string>
+#include <SDL_opengl.h>
+#include "Globals.h"
 
 
 class Window
@@ -8,6 +11,7 @@ class Window
 public:
 
 	Window(const char* title);
+	Window();
 
 	~Window();
 
@@ -26,6 +30,11 @@ public:
 	{
 		return window;
 	};
+
+	void toggleFullscreen(uint32 windowFlags)
+	{
+		SDL_SetWindowFullscreen(window, windowFlags);
+	}
 
 
 private:

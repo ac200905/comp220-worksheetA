@@ -1,4 +1,4 @@
-#include "main.h"
+#include "InputSetup.h"
 
 
 InputSetup::InputSetup()
@@ -24,7 +24,7 @@ void InputSetup::joystickInit()
 	if (SDL_NumJoysticks() < 1)
 	{
 		printf("Warning: No joysticks connected!\n");
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Warning: No joysticks connected!\n", SDL_GetError(), NULL);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Warning:\n", "No joysticks connected!\n", NULL);
 	}
 	else
 	{
@@ -41,60 +41,12 @@ void InputSetup::joystickInit()
 
 void InputSetup::joystickInput(int which, int axis, int value)
 {
-	if (which == 0)
-	{
-		if (axis == 0)
-		{
-			if ( value < -3200)
-			{
-				//xOffset = -2;
-			}
-			else if (value > 3200)
-			{
-				//xOffset = 2;
-			}
-			else
-			{
-				//xOffset = 0;
-			}
-		}
-		if (axis == 1)
-		{
-			if (value < -3200)
-			{
-				//yOffset = -2;
-			}
-			else if (value > 3200)
-			{
-				//yOffset = 2;
-			}
-			else
-			{
-				//yOffset = 0;
-			}
-		}
-	}
+
 		
 }
 
 void InputSetup::controllerInput(int which, int axis, float value)
 {
-	if (which = 0)
-	{
-		if (axis == 0)
-		{
-			if (value < -3200)
-			{
-				//xOffset = -1 * mouseSpeed;
-			}
-			else if (value > 3200)
-			{
-				//xOffset = 1 * mouseSpeed;
-			}
-		}
-	}
-	if (SDL_CONTROLLER_AXIS_LEFTX)
-	{
-		//xOffset = -1 * mouseSpeed;
-	}
+	
+	
 }

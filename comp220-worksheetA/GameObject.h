@@ -1,5 +1,16 @@
 #pragma once
-#include "main.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <GL\glew.h>
+#include <glm\glm.hpp>
+#include <glm\gtx\transform.hpp>
+#include <glm\gtc\matrix_transform.hpp>
+#include "Texture.h"
+#include "Model.h"
+#include "Mesh.h"
+#include "shaders.h"
+
+using namespace glm;
 
 class GameObject
 {

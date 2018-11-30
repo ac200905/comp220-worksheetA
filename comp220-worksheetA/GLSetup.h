@@ -1,11 +1,14 @@
 #pragma once
-#include "main.h"
+#include <SDL.h>
+#include <GL/glew.h>
+#include <SDL_opengl.h>
 
 class GLSetup
 {
 
 public:
 	GLSetup(SDL_Window* window);
+	GLSetup();
 	~GLSetup();
 
 	//Create a new Open_GL context

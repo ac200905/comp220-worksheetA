@@ -1,5 +1,7 @@
 #pragma once
-#include "main.h"
+#include "InputSetup.h"
+#include "Camera.h"
+#include "Vertex.h"
 #include <iostream>
 
 using namespace glm;

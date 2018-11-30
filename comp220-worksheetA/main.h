@@ -25,6 +25,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "GameObject.h"
+#include "Timer.h"
 
 
 using namespace glm;

@@ -1,8 +1,14 @@
-#include "main.h"
+#include "Window.h"
 
+
+Window::Window()
+{
+	window = nullptr;
+}
 
 Window::Window(const char* title)
 {
+	window = nullptr;
 	//Initialise the SDL Library
 	initSDL();
 
@@ -29,11 +35,20 @@ Window::~Window()
 int Window::initSDL()
 {
 	//Initialises the SDL Library, passing in SDL_INIT_VIDEO to only initialise the video subsystems
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) !=0)
 	{
 		//Display an error message box
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "SDL_Init failed", SDL_GetError(), NULL);
 		return 1;
+	}
+
+	/* Just check for one specific subsystem */
+
+	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) {
+		printf("Video is initialized.\n");
+	}
+	else {
+		printf("Video is not initialized.\n");
 	}
 	return 0;
 }

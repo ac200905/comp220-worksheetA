@@ -1,5 +1,10 @@
-#include "main.h"
+#include "GLSetup.h"
 
+
+GLSetup::GLSetup()
+{
+	
+}
 
 GLSetup::GLSetup(SDL_Window* Window)
 {
@@ -14,6 +19,7 @@ GLSetup::GLSetup(SDL_Window* Window)
 
 GLSetup::~GLSetup()
 {
+	SDL_GL_DeleteContext(glContext);
 }
 
 void GLSetup::setGLVersion()

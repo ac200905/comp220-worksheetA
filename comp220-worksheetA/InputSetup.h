@@ -2,8 +2,9 @@
 #include <SDL.h>
 #include <map>
 #include <iostream>
+#include "Camera.h"
+#include "Globals.h"
 
-#include "main.h"
 
 
 class InputSetup

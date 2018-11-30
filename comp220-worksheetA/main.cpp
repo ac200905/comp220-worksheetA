@@ -6,10 +6,16 @@
 int main(int argc, char* args[])
 {
 	
-	// Transfer this to gameLoop in Game.cpp
+	Game game;
 
+
+	game.gameLoop();
+
+	
+	// Transfer this to gameLoop in Game.cpp
+	/*
 	// Create SDL window
-	Window window = Window("Main Window");
+	Window window = Window("Night Fire Game");
 	SDL_Window* mainWindow = window.getWindow();
 
 	// Initalise Open_GL and GLEW
@@ -24,8 +30,6 @@ int main(int argc, char* args[])
 	// Init deltaTime
 	float deltaTime = 0.0f;	// Time between this frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
-
-
 
 	// Load Mesh
 	MeshCollection * tankMesh = new MeshCollection();
@@ -47,7 +51,6 @@ int main(int argc, char* args[])
 	// Load shaders
 	GLuint programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 
-
 	// Translation and scale
 	vec3 modelTranslation = vec3(0.0f, 0.0f, 0.0f);
 	vec3 modelScale = vec3(1.0f, 1.0f, 1.0f);
@@ -66,6 +69,8 @@ int main(int argc, char* args[])
 	// Caluclate modelMatrix
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
+	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
+
 	// Create Camera
 	Camera* camera = new Camera();
 	camera->setFoV(90);
@@ -73,10 +78,8 @@ int main(int argc, char* args[])
 	camera->setFullscreenProjectionMatrix();
 	camera->setViewMatrix();
 
-
-	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
-
 	
+
 	// Set up new input and PlayerController
 	InputSetup* input = new InputSetup();
 	PlayerController playerController = PlayerController(input, camera);
@@ -120,8 +123,7 @@ int main(int argc, char* args[])
 	// SDL Event structure, this will be checked in the while loop
 	SDL_Event event;
 	while (running)
-	{
-		
+	{	
 		// Update deltatime
 		float thisFrame = SDL_GetTicks();
 		deltaTime = thisFrame - lastFrame;
@@ -226,6 +228,7 @@ int main(int argc, char* args[])
 							moveCameraDown = false;
 						}
 					}
+					// Right trigger
 					if (event.caxis.axis == 2)
 					{
 						if (event.caxis.value > 32000)
@@ -240,8 +243,8 @@ int main(int argc, char* args[])
 						}
 					}
 				}
-				
 			}
+
 			// Switch case for every message we are intereted in
 			switch (event.type)
 			{
@@ -290,13 +293,9 @@ int main(int argc, char* args[])
 				input->mouseInput(event.motion.xrel, event.motion.yrel);
 				playerController.mouseControls();
 				break;
-/*
-			case SDL_CONTROLLERAXISMOTION:
-				input->controllerInput(event.caxis.which, event.caxis.axis, event.caxis.value);
-				std::cout << "moving controller." << std::endl;
-				//playerController.joystickControls();
-				break;
-*/
+
+			
+
 			}	
 		}
 
@@ -356,18 +355,16 @@ int main(int argc, char* args[])
 			camera->moveYAxis(-1);
 		}
 
-
 		// Handle keyboard input
 		playerController.keyboardControls(deltaTime);
+		//playerController.keyboardControls(timer.GetDeltaTime);
 
 		// Handle joystick input
 		playerController.joystickControls();
 
-		
 		// Calculate MVP matrix
 		mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 
-		
 		//Do rendering here!
 		// Culls the clockwise facing side of the triangle
 		glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
@@ -389,7 +386,6 @@ int main(int argc, char* args[])
 		// Third texture
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textureID_03);
-
 
 
 		GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
@@ -419,10 +415,10 @@ int main(int argc, char* args[])
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank1->modelMatrix));
 
 			tank1->scale = vec3(1.0f);
-			tank1->position = vec3(50+tankMoveSpeed, 0, 0);
+			tank1->position = vec3(100+tankMoveSpeed, 0, 0);
 			tank1->update();
 			tank1->render();
-			if (tank1->position.x < -50)
+			if (tank1->position.x < -100)
 			{
 				tankMoveSpeed = 0;
 			}
@@ -520,6 +516,6 @@ int main(int argc, char* args[])
 	SDL_DestroyWindow(mainWindow);
 	//https://wiki.libsdl.org/SDL_Quit
 	SDL_Quit();
-	
+	*/
 	return 0;
 }
