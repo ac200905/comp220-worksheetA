@@ -34,14 +34,18 @@ void Game::gameInit()
 	bool running = true;
 
 	treeMesh = new MeshCollection();
-	loadMeshFromFile("lowpolytree.fbx", treeMesh);
+	//loadMeshFromFile("lowpolytree.fbx", treeMesh);
+	loadMeshFromFile("utah-teapot.fbx", treeMesh);
 
 	// Textures
-	textureID_tree = loadTextureFromFile("tree.png");
+	//diffuseTextureID = loadTextureFromFile("tree.png");
+	diffuseTextureID = loadTextureFromFile("Tank1DF.png");
+	specularTextureID = loadTextureFromFile("specmap.png");
 
 	// Load shaders
 	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
-	programID = LoadShaders("vertBlinnPhong.glsl", "fragBlinnPhong.glsl");
+	//programID = LoadShaders("vertBlinnPhong.glsl", "fragBlinnPhong.glsl");
+	programID = LoadShaders("vertCelShader.glsl", "fragCelShader.glsl");
 
 
 	// Set up new game objects
@@ -195,8 +199,8 @@ void Game::gameRender()
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
 	// Materials
-	vec4 ambientMaterialColour = vec4(0.1f, 0.0f, 0.0f, 1.0f);
-	vec4 diffuseMaterialColour = vec4(0.0f, 0.5f, 0.0f, 1.0f);
+	vec4 ambientMaterialColour = vec4(0.5f, 0.5f, 0.5, 1.0f);
+	vec4 diffuseMaterialColour = vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Light
@@ -204,7 +208,7 @@ void Game::gameRender()
 	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	float specularMaterialPower = 50.0f;
+	float specularMaterialPower = 100.0f;
 
 	vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
 
@@ -220,14 +224,18 @@ void Game::gameRender()
 
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID_tree);
+	glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-	GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
+	GLint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
+	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
 
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
@@ -248,7 +256,8 @@ void Game::gameRender()
 	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
-	glUniform1i(baseTextureLocation, 0);
+	glUniform1i(diffuseTextureLocation, 0);
+	glUniform1i(specularTextureLocation, 1);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
@@ -264,17 +273,16 @@ void Game::gameRender()
 
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
-	//MVP matrix
-	//glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
+	
 	
 	if (tree1)
 	{
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
 
-		tree1->scale = vec3(1.0f);
+		tree1->scale = vec3(0.3);
 		tree1->position = vec3(0, 0, -5);
-		tree1->setRotation(-1.55, 0, 0);
+		//tree1->setRotation(-1.55, 0, 0);
 		tree1->update();
 		tree1->render();
 
@@ -285,8 +293,8 @@ void Game::gameRender()
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
 
-		tree2->scale = vec3(1.0f);
-		tree2->position = vec3(5, 0, 4);
+		tree2->scale = vec3(0.3f);
+		tree2->position = vec3(5, 0, 7);
 		tree2->setRotation(-1.55, 0, 0);
 		tree2->update();
 		tree2->render();
@@ -478,8 +486,9 @@ void Game::gameClean()
 {
 	glDeleteProgram(programID);
 
-	glDeleteTextures(1, &textureID_tree);
-
+	glDeleteTextures(1, &diffuseTextureID);
+	glDeleteTextures(1, &specularTextureID);
+	
 
 	//Delete Context
 	//SDL_GL_DeleteContext(gl_Context);

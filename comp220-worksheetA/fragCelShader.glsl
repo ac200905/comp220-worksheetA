@@ -22,10 +22,16 @@ uniform float specularMaterialPower;
 
 uniform vec3 lightDirection;
 
+const float levels = 4.0;
+
 void main()
 {
 	//The shininess of the surface
 	float diffuseIntensity = dot(vertexNormalOut, -lightDirection);
+
+	float brightness = max(diffuseIntensity, 0.0);
+	float level = floor(brightness * levels);
+	brightness = level / levels;
 
 	vec3 maxReflectionVector = normalize(-lightDirection + viewDirection);
 	float specularIntensity = pow(dot(vertexNormalOut, maxReflectionVector), specularMaterialPower);
@@ -33,7 +39,11 @@ void main()
 	vec4 diffuseTextureColour = texture(diffuseTexture, vertexTextureCoordOut);
 	vec4 specularTextureColour = texture(specularTexture, vertexTextureCoordOut);
 
-	colour = (ambientLightColour * ambientMaterialColour) + 
-			(diffuseLightColour * diffuseIntensity * diffuseMaterialColour * diffuseTextureColour) + 
+	colour = (ambientLightColour * ambientMaterialColour * brightness) + 
+			(diffuseLightColour * diffuseIntensity * diffuseMaterialColour * diffuseTextureColour * brightness) + 
 			(specularLightColour * specularIntensity * specularMaterialColour * specularTextureColour);
+
+	
+	
+	
 }

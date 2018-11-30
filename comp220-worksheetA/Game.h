@@ -96,7 +96,8 @@ private:
 	GameObject* tree1;
 	GameObject* tree2;
 
-	GLuint textureID_tree;
+	GLuint diffuseTextureID;
+	GLuint specularTextureID;
 
 	GLuint programID;
 
