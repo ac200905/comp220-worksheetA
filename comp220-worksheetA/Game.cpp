@@ -103,7 +103,7 @@ void Game::gameLoop()
 
 void Game::gameUpdate()
 {
-	
+	cameraPosition = camera->getPosition();
 	//tank1->update();
 
 	if (window->getIsFullscreen())
@@ -196,11 +196,15 @@ void Game::gameRender()
 
 	// Materials
 	vec4 ambientMaterialColour = vec4(0.1f, 0.0f, 0.0f, 1.0f);
-	vec4 diffuseMaterialColour = vec4(0.8f, 0.0f, 0.0f, 1.0f);
+	vec4 diffuseMaterialColour = vec4(0.0f, 0.5f, 0.0f, 1.0f);
+	vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Light
 	vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	float specularMaterialPower = 50.0f;
 
 	vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
 
@@ -228,11 +232,16 @@ void Game::gameRender()
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
 	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
+	GLint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
+	GLint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
 	
 	GLint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
 	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
+	GLint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
 
 	GLint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+
+	GLint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
 
 	// Send the uniforms across
 
@@ -243,11 +252,17 @@ void Game::gameRender()
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
+	glUniform4fv(specularMaterialColourLocation, 1, value_ptr(specularMaterialColour));
 
 	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
 	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
+	glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
+
+	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
 
 	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
+
+	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
 	//MVP matrix
 	//glUniformMatrix4fv(MVPLocation, 1, false, &MVPMatrix[0][0]);
@@ -278,8 +293,6 @@ void Game::gameRender()
 
 	}
 	
-
-
 
 	SDL_GL_SwapWindow(window->getWindow());
 

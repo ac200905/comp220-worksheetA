@@ -114,6 +114,6 @@ private:
 
 	GLint baseTextureLocation;
 
-	glm::vec3 cameraPosition;
+	vec3 cameraPosition;
 
 };
