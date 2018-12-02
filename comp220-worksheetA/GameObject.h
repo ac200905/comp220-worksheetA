@@ -18,17 +18,68 @@ public:
 	GameObject();
 	~GameObject();
 
-	MeshCollection * newModel;
+	
 
-	void update();
+	void update(float deltaTime);
 
 	void render();
 
-	// Give the GameObject a loaded mesh
-	void giveMesh(MeshCollection *mesh)
+	void SetPosition(float x, float y, float z)
 	{
-		newModel = mesh;
+		position = glm::vec3(x, y, z);
 	};
+
+	void SetScale(float x)
+	{
+		scale = glm::vec3(x, x, x);
+	};
+
+	glm::vec3& GetPosition()
+	{
+		return position;
+	};
+
+	glm::mat4& GetModelTransformation()
+	{
+		return modelMatrix;
+	};
+
+	// Give the GameObject a loaded mesh
+	void SetMesh(MeshCollection * meshes)
+	{
+		Meshes = meshes;
+	};
+
+	void SetShader(Shader * shader)
+	{
+		ShaderProgram = shader;
+	};
+
+	Shader * GetShader()
+	{
+		return ShaderProgram;
+	};
+
+	void SetDiffuseTexture(GLuint texture)
+	{
+		DiffuseTexture = texture;
+	};
+
+	GLuint GetDiffuseTexture()
+	{
+		return DiffuseTexture;
+	};
+
+private:
+
+	// Mesh
+	MeshCollection * Meshes;
+
+	// Shader
+	Shader * ShaderProgram;
+
+	// Texture
+	GLuint DiffuseTexture;
 
 	mat4 translationMatrix;
 	mat4 rotationMatrix;

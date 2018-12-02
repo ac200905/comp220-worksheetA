@@ -4,14 +4,35 @@
 
 GameObject::GameObject()
 {
+	position = glm::vec3(0.0f);
+	scale = glm::vec3(1.0f);
+	rotation = glm::vec3(0.0f);
+
+	translationMatrix = glm::mat4(0.0f);
+	rotationMatrix = glm::mat4(0.0f);
+	scaleMatrix = glm::mat4(0.0f);
+	modelMatrix = glm::mat4(0.0f);
+
+	Meshes = nullptr;
+	ShaderProgram = nullptr;
+	DiffuseTexture = 0;
 }
 
 
 GameObject::~GameObject()
 {
+	glDeleteTextures(1, &DiffuseTexture);
+
+	if (Meshes) {
+		delete Meshes;
+	}
+	if (ShaderProgram)
+	{
+		delete ShaderProgram;
+	}
 }
 
-void GameObject::update()
+void GameObject::update(float deltaTime)
 {
 	// Calculate Matricies for new object
 	translationMatrix = translate(position);
@@ -26,12 +47,14 @@ void GameObject::update()
 	// Create the modelMatrix for the object
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
 
-	// Render the object
-	//newModel->render();
+
 }
 
 void GameObject::render()
 {
 	// Render the object
-	newModel->render();
+	if (Meshes)
+	{
+		Meshes->render();
+	}
 }

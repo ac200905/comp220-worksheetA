@@ -40,13 +40,18 @@ void Game::gameInit()
 	textureID_01 = loadTextureFromFile("Tank1DF.png");
 
 	// Load shaders
-	programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
+	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
+
+
+	textureShader = new Shader();
+	textureShader->Load("vertTextured.glsl", "fragTextured.glsl");
 
 
 	// Set up new game objects
 	tank1 = new GameObject();
-	tank1->giveMesh(tankMesh);
-
+	tank1->SetMesh(tankMesh);
+	
+	
 	
 
 	camera = new Camera();
@@ -193,12 +198,25 @@ void Game::gameRender()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearDepth(1.0f);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID_01);
+
+
+	textureShader->Use();
+
+
+	glUniformMatrix4fv(textureShader->GetUniform("modelMatrix"), 1, GL_FALSE, value_ptr(modelMatrix));
+	glUniformMatrix4fv(textureShader->GetUniform("viewMatrix"), 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
+	glUniformMatrix4fv(textureShader->GetUniform("projectionMatrix"), 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
+
+	//GLint baseTextureLocation = glGetUniformLocation(programID, "baseTexture");
+	glUniform1i(textureShader->GetUniform("baseTexture"), 0);
+	/*
 	// Linking shaders
 	glUseProgram(programID);
 
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID_01);
+	
 
 	GLuint MVPLocation = glGetUniformLocation(programID, "MVPMatrix");
 
@@ -232,8 +250,18 @@ void Game::gameRender()
 		
 	}
 	
+	*/
+	if (tank1)
+	{
 
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tank1->modelMatrix));
 
+		tank1->SetScale(1.0f);
+		tank1->SetPosition(20.0f, 0.0f, 0.0f); 
+		tank1->update(deltaTime);
+		tank1->render();
+
+	}
 
 	SDL_GL_SwapWindow(window->getWindow());
 
@@ -417,10 +445,10 @@ void Game::gameInputEvents()
 
 void Game::gameClean()
 {
-	glDeleteProgram(programID);
+	//glDeleteProgram(programID);
 
 	glDeleteTextures(1, &textureID_01);
-
+	delete textureShader;
 
 	//Delete Context
 	//SDL_GL_DeleteContext(gl_Context);

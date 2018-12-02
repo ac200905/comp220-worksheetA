@@ -97,7 +97,9 @@ private:
 
 	GLuint textureID_01;
 
-	GLuint programID;
+	//GLuint programID;
+
+	Shader * textureShader;
 
 	GLuint MVPLocation;
 
@@ -109,6 +111,6 @@ private:
 	GLuint viewMatrixLocation;
 	GLuint projectionMatrixLocation;
 
-	GLint baseTextureLocation;
+	//GLint baseTextureLocation;
 
 };
