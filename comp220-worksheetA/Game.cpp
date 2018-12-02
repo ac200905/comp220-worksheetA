@@ -1,4 +1,5 @@
 #include "Game.h"
+
 #include <iostream>
 
 // Should refactor game loop out of main.cpp
@@ -36,17 +37,24 @@ void Game::gameInit()
 	treeMesh = new MeshCollection();
 	//loadMeshFromFile("lowpolytree.fbx", treeMesh);
 	loadMeshFromFile("utah-teapot.fbx", treeMesh);
+	//loadMeshFromFile("Tank1.FBX", treeMesh);
+
+	fireMesh = new MeshCollection();
+	loadMeshFromFile("campfire.fbx", fireMesh);
+
 
 	// Textures
-	//diffuseTextureID = loadTextureFromFile("tree.png");
+	//diffuseTextureID = loadTextureFromFile("campfire.jpg");
 	diffuseTextureID = loadTextureFromFile("Tank1DF.png");
 	specularTextureID = loadTextureFromFile("specmap.png");
+	//diffuseTextureID_Tree = loadTextureFromFile("tree.png");
+
 
 	// Load shaders
 	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 	//programID = LoadShaders("vertBlinnPhong.glsl", "fragBlinnPhong.glsl");
-	programID = LoadShaders("vertCelShader.glsl", "fragCelShader.glsl");
-
+	//programID = LoadShaders("vertCelShader.glsl", "fragCelShader.glsl");
+	programID = LoadShaders("vertBlinnPhongPL.glsl", "fragBlinnPhongPL.glsl");
 
 	// Set up new game objects
 	tree1 = new GameObject();
@@ -54,9 +62,45 @@ void Game::gameInit()
 
 	tree2 = new GameObject();
 	tree2->giveMesh(treeMesh);
-	
 
+	fire = new GameObject();
+	fire->giveMesh(fireMesh);
 	
+	if (tree1)
+	{
+
+		
+		tree1->scale = vec3(0.1);
+		tree1->position = vec3(0, 1.7, -7);
+		//tree1->setRotation(radians(-90.0f), 0, 0);
+		tree1->update();
+		tree1->render();
+
+	}
+
+	if (tree2)
+	{
+		
+		tree2->scale = vec3(0.1);
+		tree2->position = vec3(5, 1.7, 7);
+		//tree2->setRotation(radians(-90.0f), 0, 0);
+		tree2->update();
+		tree2->render();
+
+	}
+
+	if (fire)
+	{
+		
+		fire->scale = vec3(1);
+		fire->position = vec3(0, 0, 0);
+		fire->setRotation(radians(-90.0f), 0, 0);
+		fire->update();
+		fire->render();
+
+	}
+	
+	float turnspeed = 0;
 
 	camera = new Camera();
 	camera->setFoV(90);
@@ -199,23 +243,29 @@ void Game::gameRender()
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
 	// Materials
-	vec4 ambientMaterialColour = vec4(0.5f, 0.5f, 0.5, 1.0f);
-	vec4 diffuseMaterialColour = vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 ambientMaterialColour = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+	glm::vec4 diffuseMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Light
-	vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	float specularMaterialPower = 100.0f;
 
-	vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
+	//vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
+
+	//Point light
+	std::vector<PointLight> PointLights;
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	//PointLights.push_back({ glm::vec4(0.0f,1.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,0.0f,0.0f) });
+	//PointLights.push_back({ glm::vec4(0.0f,0.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,0.0f,0.0f) });
 
 
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
-	glClearColor(0.0f, 1.0, 1.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearDepth(1.0f);
 
@@ -229,13 +279,20 @@ void Game::gameRender()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
+
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 	GLint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
-	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
+	GLint diffuseTextureTreeLocation = glGetUniformLocation(programID, "diffuseTextureTree");
+	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture"); 
+
+	GLint directionalLightDiffuseColourLocation = glGetUniformLocation(programID, "directionalLight.diffuseColour");
+	GLint directionalLightSpecularColourLocation = glGetUniformLocation(programID, "directionalLight.specularColour");
 
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
@@ -247,9 +304,30 @@ void Game::gameRender()
 	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
 	GLint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
 
-	GLint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+	//GLint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
+	GLint lightDirectionLocation = glGetUniformLocation(programID, "directionalLight.direction");
 
 	GLint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
+
+	const int MAX_NO_OF_POINT_LIGHTS = 8;
+	GLint pointLightDiffuseColourLocations[MAX_NO_OF_POINT_LIGHTS];
+	GLint pointLightSpecularColourLocations[MAX_NO_OF_POINT_LIGHTS];
+	GLint pointLightPositionLocations[MAX_NO_OF_POINT_LIGHTS];
+
+	char characterBuffer[50];
+	for (int i = 0; i < MAX_NO_OF_POINT_LIGHTS; i++)
+	{
+		sprintf_s(characterBuffer, "pointLights[%i].diffuseColour", i);
+		pointLightDiffuseColourLocations[i] = glGetUniformLocation(programID, characterBuffer);
+
+		sprintf_s(characterBuffer, "pointLights[%i].specularColour", i);
+		pointLightSpecularColourLocations[i] = glGetUniformLocation(programID, characterBuffer);
+
+		sprintf_s(characterBuffer, "pointLights[%i].position", i);
+		pointLightPositionLocations[i] = glGetUniformLocation(programID, characterBuffer);
+	}
+
+	GLint numberOfPointLightsLocation = glGetUniformLocation(programID, "numberOfPointLights");
 
 	// Send the uniforms across
 
@@ -258,31 +336,41 @@ void Game::gameRender()
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
 	glUniform1i(diffuseTextureLocation, 0);
 	glUniform1i(specularTextureLocation, 1);
+	//glUniform1i(diffuseTextureTreeLocation, 2);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
 	glUniform4fv(specularMaterialColourLocation, 1, value_ptr(specularMaterialColour));
 
 	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
-	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
-	glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
+	//glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
+	//glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
+
+	glUniform4fv(directionalLightDiffuseColourLocation, 1, glm::value_ptr(diffuseLightColour));
+	glUniform4fv(directionalLightSpecularColourLocation, 1, glm::value_ptr(specularLightColour));
 
 	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
 
-	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
+	//glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
 
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
+	for (int i = 0; i < PointLights.size(); i++)
+	{
+		glUniform4fv(pointLightDiffuseColourLocations[i], 1, value_ptr(PointLights[i].DiffuseColour));
+		glUniform4fv(pointLightSpecularColourLocations[i], 1, value_ptr(PointLights[i].SpecularColour));
+		glUniform3fv(pointLightPositionLocations[i], 1, value_ptr(PointLights[i].Position));
+	}
+
+	glUniform1i(numberOfPointLightsLocation, PointLights.size());
 	
-	
+	turnspeed = turnspeed + 0.001 * deltaTime;
 	if (tree1)
 	{
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
-
-		tree1->scale = vec3(0.3);
-		tree1->position = vec3(0, 0, -5);
-		//tree1->setRotation(-1.55, 0, 0);
+		//glUniform1i(diffuseTextureLocation, 2);
+		tree2->setRotation(radians(-90.0f), 0, turnspeed);
 		tree1->update();
 		tree1->render();
 
@@ -290,14 +378,21 @@ void Game::gameRender()
 
 	if (tree2)
 	{
-
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
-
-		tree2->scale = vec3(0.3f);
-		tree2->position = vec3(5, 0, 7);
-		tree2->setRotation(-1.55, 0, 0);
+		//glUniform1i(diffuseTextureLocation, 2);
+		
 		tree2->update();
 		tree2->render();
+
+	}
+	
+	if (fire)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(fire->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		
+		fire->update();
+		fire->render();
 
 	}
 	

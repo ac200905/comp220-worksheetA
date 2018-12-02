@@ -10,7 +10,7 @@
 #include <GL\glew.h>
 #include <SDL_opengl.h>
 
-#include "vertex.h"
+#include "Vertex.h"
 #include "Mesh.h"
 
 bool loadModelFromFile(const std::string& filename, GLuint VBO, GLuint EBO, unsigned int& numVerts, unsigned int& numIndices);

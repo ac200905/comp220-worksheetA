@@ -23,6 +23,7 @@
 #include "Mesh.h"
 #include "GameObject.h"
 #include "Timer.h"
+#include "Light.h"
 
 using namespace glm;
 
@@ -54,7 +55,7 @@ private:
 	float deltaTime;
 	float lastFrame;
 
-	
+	float turnspeed;
 	//std::map<std::string, bool> ControlActions;
 	//ControlActions["rotateCameraLeft"] = false;
 
@@ -86,6 +87,7 @@ private:
 	SDL_Event event;
 
 	MeshCollection * treeMesh;
+	MeshCollection * fireMesh;
 
 	InputSetup* input;
 
@@ -95,9 +97,13 @@ private:
 
 	GameObject* tree1;
 	GameObject* tree2;
+	GameObject* fire;
 
+	GLuint diffuseTextureID_Tree;
 	GLuint diffuseTextureID;
 	GLuint specularTextureID;
+
+
 
 	GLuint programID;
 

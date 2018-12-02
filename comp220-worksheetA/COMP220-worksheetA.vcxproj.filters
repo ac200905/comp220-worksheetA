@@ -101,6 +101,9 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragShader.glsl" />
@@ -111,5 +114,7 @@
     <None Include="fragBlinnPhong.glsl" />
     <None Include="vertCelShader.glsl" />
     <None Include="fragCelShader.glsl" />
+    <None Include="vertBlinnPhongPL.glsl" />
+    <None Include="fragBlinnPhongPL.glsl" />
   </ItemGroup>
 </Project>
