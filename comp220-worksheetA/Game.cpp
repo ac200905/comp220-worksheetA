@@ -36,11 +36,19 @@ void Game::gameInit()
 	treeMesh = new MeshCollection();
 	//loadMeshFromFile("lowpolytree.fbx", treeMesh);
 	loadMeshFromFile("utah-teapot.fbx", treeMesh);
+	//loadMeshFromFile("Tank1.FBX", treeMesh);
+
+	fireMesh = new MeshCollection();
+	loadMeshFromFile("campfire.fbx", fireMesh);
+
 
 	// Textures
-	//diffuseTextureID = loadTextureFromFile("tree.png");
+	//diffuseTextureID = loadTextureFromFile("campfire.jpg");
 	diffuseTextureID = loadTextureFromFile("Tank1DF.png");
 	specularTextureID = loadTextureFromFile("specmap.png");
+	//diffuseTextureID_Tree = loadTextureFromFile("tree.png");
+
+	diffuseTextureID_Tree = loadTextureFromFile("tree.png");
 
 	// Load shaders
 	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
@@ -52,8 +60,11 @@ void Game::gameInit()
 	tree1 = new GameObject();
 	tree1->giveMesh(treeMesh);
 
-	tree2 = new GameObject();
-	tree2->giveMesh(treeMesh);
+	//tree2 = new GameObject();
+	//tree2->giveMesh(treeMesh);
+
+	fire = new GameObject();
+	fire->giveMesh(fireMesh);
 	
 
 	
@@ -199,23 +210,23 @@ void Game::gameRender()
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
 	// Materials
-	vec4 ambientMaterialColour = vec4(0.5f, 0.5f, 0.5, 1.0f);
-	vec4 diffuseMaterialColour = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	vec4 ambientMaterialColour = vec4(0.5f);
+	vec4 diffuseMaterialColour = vec4(0.5f);
 	vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Light
-	vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 ambientLightColour = vec4(1.0f);
+	vec4 diffuseLightColour = vec4(1.0f);
 	vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	float specularMaterialPower = 100.0f;
+	float specularMaterialPower = 1000.0f;
 
-	vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
+	vec3 lightDirection = vec3(0.0f, -1.0f, -1.0f);// points directly down
 
 
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
-	glClearColor(0.0f, 1.0, 1.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearDepth(1.0f);
 
@@ -229,13 +240,17 @@ void Game::gameRender()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
+
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
 	GLint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
-	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture");
+	GLint diffuseTextureTreeLocation = glGetUniformLocation(programID, "diffuseTextureTree");
+	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture"); 
 
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
@@ -258,6 +273,7 @@ void Game::gameRender()
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
 	glUniform1i(diffuseTextureLocation, 0);
 	glUniform1i(specularTextureLocation, 1);
+	//glUniform1i(diffuseTextureTreeLocation, 2);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
@@ -279,10 +295,10 @@ void Game::gameRender()
 	{
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
-
-		tree1->scale = vec3(0.3);
-		tree1->position = vec3(0, 0, -5);
-		//tree1->setRotation(-1.55, 0, 0);
+		glUniform1i(diffuseTextureLocation, 2);
+		tree1->scale = vec3(0.1);
+		tree1->position = vec3(0, 1.7, -7);
+		tree1->setRotation(-1.55, 0, 3);
 		tree1->update();
 		tree1->render();
 
@@ -290,14 +306,25 @@ void Game::gameRender()
 
 	if (tree2)
 	{
-
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
-
-		tree2->scale = vec3(0.3f);
-		tree2->position = vec3(5, 0, 7);
-		tree2->setRotation(-1.55, 0, 0);
+		glUniform1i(diffuseTextureLocation, 2);
+		tree2->scale = vec3(1);
+		tree2->position = vec3(5, 1.7, 7);
+		tree2->setRotation(-1.55, 0, 0.3);
 		tree2->update();
 		tree2->render();
+
+	}
+
+	if (fire)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(fire->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		fire->scale = vec3(1);
+		fire->position = vec3(0, 0, 0);
+		fire->setRotation(-1.55, 0, 0);
+		fire->update();
+		fire->render();
 
 	}
 	
