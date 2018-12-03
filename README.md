@@ -20,7 +20,7 @@ I switched my Tree mesh with a Teapot mesh to make sure I was correct and the te
 ![Teapot Texture Coordinates](ScreenShots/TeapotTextureCoords.png)
 
 ## Plan For Next Iteration
-For the next iteration I will be looking to complete the Shader Class I have started and incorporate it into the main branch. This will make it more convenient to apply different shaders and textures to each object. I will also complete and integrate the the cel shading code with the point light code. Ideally I would like to then start making a particle emitter to act as the fire in the middle of the scene. Finally I need to create a ground object with basic collision detection to stop the player moving through the objects in the scene. 
+For the next iteration I will be looking to complete the Shader Class I have started and incorporate it into the main branch. This will make it more convenient to apply different shaders and textures to each object. I will also complete and integrate the the cel shading code with the point light code and attempt to get the cel shading working with textures and not just lighting. Ideally I would like to then start making a particle emitter to act as the fire in the middle of the scene. Finally I need to create a ground object and basic collision detection to stop the player moving through the objects in the scene. 
 
 ## Resources Used
 https://learnopengl.com/ <br/>
