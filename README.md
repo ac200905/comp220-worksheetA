@@ -23,19 +23,19 @@ I switched my Tree mesh with a Teapot mesh to make sure I was correct and the te
 For the next iteration I will be looking to complete the Shader Class I have started and incorporate it into the main branch. This will make it more convenient to apply different shaders and textures to each object. I will also complete and integrate the the cel shading code with the point light code. Ideally I would like to then start making a particle emitter to act as the fire in the middle of the scene. Finally I need to create a ground object with basic collision detection to stop the player moving through the objects in the scene. 
 
 ## Resources Used
-https://learnopengl.com/
-http://www.opengl-tutorial.org/
-https://learnopengl.com/Lighting/Basic-Lighting
-https://learnopengl.com/Lighting/Light-casters
-https://www.youtube.com/watch?v=dzItGHyteng
-http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/toon-shader-version-ii/
-Learn OpenGL - by F. Hussain
-Real-Time Rendering - by T. Möller, E. Haines, N. Hoffman, A. Pesce, M. Iwanicki, S. Hillaire
-Graphics Shaders: Theory and Practice - by M. Bailey, S. Cunningham
-TreeModel - https://free3d.com/3d-model/low-poly-tree-96065.html
-CampfireModel - https://free3d.com/3d-model/low-poly-fire-camp-182212.html
+https://learnopengl.com/ <br/>
+http://www.opengl-tutorial.org/ <br/>
+https://learnopengl.com/Lighting/Basic-Lighting <br/>
+https://learnopengl.com/Lighting/Light-casters <br/>
+https://www.youtube.com/watch?v=dzItGHyteng <br/>
+http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/toon-shader-version-ii/ <br/>
+Learn OpenGL - by F. Hussain <br/>
+Real-Time Rendering - by T. Möller, E. Haines, N. Hoffman, A. Pesce, M. Iwanicki, S. Hillaire <br/>
+Graphics Shaders: Theory and Practice - by M. Bailey, S. Cunningham <br/>
+TreeModel - https://free3d.com/3d-model/low-poly-tree-96065.html <br/>
+CampfireModel - https://free3d.com/3d-model/low-poly-fire-camp-182212.html <br/>
 
 ## Resources For Future Use
-http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
-https://learnopengl.com/In-Practice/2D-Game/Particles
-https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection
+http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/ <br/>
+https://learnopengl.com/In-Practice/2D-Game/Particles <br/>
+https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection <br/>
