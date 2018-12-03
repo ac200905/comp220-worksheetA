@@ -39,15 +39,20 @@ uniform int numberOfPointLights;                                           //
 
 uniform vec4 ambientLightColour;
 
+const float levels = 4.0;
 
 vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 lightDirection,vec4 diffuseTextureColour,vec4 specularTextureColour)
 {
-	float nDotl=clamp(dot(vertexNormalOut,normalize(lightDirection)),0.0,1.0);
+	float nDotl=clamp(dot(vertexNormalOut,normalize(-lightDirection)),0.0,1.0);
 
-	vec3 halfWay=normalize(lightDirection+viewDirection);
+	float brightness = max(nDotl, 0.0);
+	float level = floor(brightness * levels);
+	brightness = level / levels;
+
+	vec3 halfWay=normalize(-lightDirection+viewDirection);
 	float nDoth=pow(clamp(dot(vertexNormalOut,halfWay),0.0,1.0),specularMaterialPower);
 
-	return 	(diffuseLightColour*nDotl*diffuseMaterialColour*diffuseTextureColour)+
+	return 	(diffuseLightColour*nDotl*diffuseMaterialColour*diffuseTextureColour*brightness)+
 			(specularLightColour*nDoth*specularMaterialColour*specularTextureColour);
 }
 

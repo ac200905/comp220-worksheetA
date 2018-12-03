@@ -45,7 +45,7 @@ void Game::gameInit()
 
 	// Textures
 	//diffuseTextureID = loadTextureFromFile("campfire.jpg");
-	diffuseTextureID = loadTextureFromFile("Tank1DF.png");
+	diffuseTextureID = loadTextureFromFile("tree.png");
 	specularTextureID = loadTextureFromFile("specmap.png");
 	//diffuseTextureID_Tree = loadTextureFromFile("tree.png");
 
@@ -243,14 +243,16 @@ void Game::gameRender()
 	mat4 modelMatrix = rotationMatrix * scaleMatrix * translationMatrix;
 
 	// Materials
-	glm::vec4 ambientMaterialColour = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	glm::vec4 diffuseMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 
 	// Light
 	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 specularLightColour = glm::vec4(0.0f);
 
 	float specularMaterialPower = 100.0f;
 
