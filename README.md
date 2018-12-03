@@ -32,6 +32,8 @@ http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/toon-shader-version-ii/
 Learn OpenGL - by F. Hussain
 Real-Time Rendering - by T. Möller, E. Haines, N. Hoffman, A. Pesce, M. Iwanicki, S. Hillaire
 Graphics Shaders: Theory and Practice - by M. Bailey, S. Cunningham
+TreeModel - https://free3d.com/3d-model/low-poly-tree-96065.html
+CampfireModel - https://free3d.com/3d-model/low-poly-fire-camp-182212.html
 
 ## Resources For Future Use
 http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
