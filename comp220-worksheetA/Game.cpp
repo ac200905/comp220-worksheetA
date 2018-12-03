@@ -35,8 +35,8 @@ void Game::gameInit()
 	bool running = true;
 
 	treeMesh = new MeshCollection();
-	//loadMeshFromFile("lowpolytree.fbx", treeMesh);
-	loadMeshFromFile("utah-teapot.fbx", treeMesh);
+	loadMeshFromFile("lowpolytree.fbx", treeMesh);
+	//loadMeshFromFile("utah-teapot.fbx", treeMesh);
 	//loadMeshFromFile("Tank1.FBX", treeMesh);
 
 	fireMesh = new MeshCollection();
@@ -70,8 +70,8 @@ void Game::gameInit()
 	{
 
 		
-		tree1->scale = vec3(0.1);
-		tree1->position = vec3(0, 1.7, -7);
+		tree1->scale = vec3(1.5);
+		tree1->position = vec3(0, -1.7, -7);
 		//tree1->setRotation(radians(-90.0f), 0, 0);
 		tree1->update();
 		tree1->render();
@@ -81,8 +81,8 @@ void Game::gameInit()
 	if (tree2)
 	{
 		
-		tree2->scale = vec3(0.1);
-		tree2->position = vec3(5, 1.7, 7);
+		tree2->scale = vec3(1.5);
+		tree2->position = vec3(5, -1.7, 7);
 		//tree2->setRotation(radians(-90.0f), 0, 0);
 		tree2->update();
 		tree2->render();
@@ -254,15 +254,23 @@ void Game::gameRender()
 	//glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 specularLightColour = glm::vec4(0.0f);
 
-	float specularMaterialPower = 100.0f;
+	float specularMaterialPower = 10000.0f;
 
 	//vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
 
 	//Point light
 	std::vector<PointLight> PointLights;
+	//PointLights.push_back({ glm::vec4(1.0f,0.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	//PointLights.push_back({ glm::vec4(0.0f,1.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	//PointLights.push_back({ glm::vec4(0.0f,0.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	//PointLights.push_back({ glm::vec4(0.0f,1.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,0.0f,0.0f) });
-	//PointLights.push_back({ glm::vec4(0.0f,0.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,0.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	
 
 
 	// Culls the clockwise facing side of the triangle
@@ -372,7 +380,7 @@ void Game::gameRender()
 
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
 		//glUniform1i(diffuseTextureLocation, 2);
-		tree2->setRotation(radians(-90.0f), 0, turnspeed);
+		tree2->setRotation(0, turnspeed, 0);
 		tree1->update();
 		tree1->render();
 
