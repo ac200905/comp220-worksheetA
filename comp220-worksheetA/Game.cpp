@@ -16,7 +16,6 @@ Game::~Game()
 
 void Game::gameInit()
 {
-	//init SDL
 
 	// Create SDL window
 	window = new Window("Night Fire Game");
@@ -36,24 +35,15 @@ void Game::gameInit()
 
 	treeMesh = new MeshCollection();
 	loadMeshFromFile("lowpolytree.fbx", treeMesh);
-	//loadMeshFromFile("utah-teapot.fbx", treeMesh);
-	//loadMeshFromFile("Tank1.FBX", treeMesh);
 
 	fireMesh = new MeshCollection();
 	loadMeshFromFile("campfire.fbx", fireMesh);
 
-
 	// Textures
-	//diffuseTextureID = loadTextureFromFile("campfire.jpg");
 	diffuseTextureID = loadTextureFromFile("tree.png");
 	specularTextureID = loadTextureFromFile("specmap.png");
-	//diffuseTextureID_Tree = loadTextureFromFile("tree.png");
-
 
 	// Load shaders
-	//programID = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
-	//programID = LoadShaders("vertBlinnPhong.glsl", "fragBlinnPhong.glsl");
-	//programID = LoadShaders("vertCelShader.glsl", "fragCelShader.glsl");
 	programID = LoadShaders("vertBlinnPhongPL.glsl", "fragBlinnPhongPL.glsl");
 
 	// Set up new game objects
@@ -65,40 +55,6 @@ void Game::gameInit()
 
 	fire = new GameObject();
 	fire->giveMesh(fireMesh);
-	
-	if (tree1)
-	{
-
-		
-		tree1->scale = vec3(1.5);
-		tree1->position = vec3(0, -1.7, -7);
-		//tree1->setRotation(radians(-90.0f), 0, 0);
-		tree1->update();
-		tree1->render();
-
-	}
-
-	if (tree2)
-	{
-		
-		tree2->scale = vec3(1.5);
-		tree2->position = vec3(5, -1.7, 7);
-		//tree2->setRotation(radians(-90.0f), 0, 0);
-		tree2->update();
-		tree2->render();
-
-	}
-
-	if (fire)
-	{
-		
-		fire->scale = vec3(1);
-		fire->position = vec3(0, 0, 0);
-		fire->setRotation(radians(-90.0f), 0, 0);
-		fire->update();
-		fire->render();
-
-	}
 	
 	float turnspeed = 0;
 
@@ -127,9 +83,7 @@ void Game::gameLoop()
 
 	
 
-	// Event loop, we will loop until running is set to false, usually if escape has been pressed or window is closed
-	
-	
+	// Game loop
 	while (running)
 	{
 		// Update deltatime
@@ -143,7 +97,6 @@ void Game::gameLoop()
 
 		gameRender();
 
-		
 	}
 
 	gameClean();
@@ -152,7 +105,7 @@ void Game::gameLoop()
 void Game::gameUpdate()
 {
 	cameraPosition = camera->getPosition();
-	//tank1->update();
+	
 
 	if (window->getIsFullscreen())
 	{
@@ -217,8 +170,31 @@ void Game::gameUpdate()
 	// Handle joystick input
 	playerController.joystickControls();
 
-	// Calculate MVP matrix
-	//mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
+	turnspeed = turnspeed + 0.001 * deltaTime;
+
+	if (tree1)
+	{
+		tree1->scale = vec3(1.5);
+		tree1->position = vec3(0, -1.7, -7);
+		tree1->update();
+	}
+
+	if (tree2)
+	{
+		tree2->scale = vec3(1.5);
+		tree2->position = vec3(5, -1.7, 7);
+		tree2->setRotation(0, turnspeed, 0);
+		tree2->update();
+	}
+
+	if (fire)
+	{
+		fire->scale = vec3(1);
+		fire->position = vec3(0, 0, 0);
+		fire->setRotation(radians(-90.0f), 0, 0);
+		fire->update();
+		fire->render();
+	}
 
 }
 
@@ -251,18 +227,12 @@ void Game::gameRender()
 	// Light
 	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//glm::vec4 specularLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec4 specularLightColour = glm::vec4(0.0f);
 
 	float specularMaterialPower = 10000.0f;
 
-	//vec3 lightDirection = vec3(0.0f, 0.0f, -1.0f);// points directly down
-
 	//Point light
 	std::vector<PointLight> PointLights;
-	//PointLights.push_back({ glm::vec4(1.0f,0.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	//PointLights.push_back({ glm::vec4(0.0f,1.0f,0.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	//PointLights.push_back({ glm::vec4(0.0f,0.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
@@ -270,8 +240,6 @@ void Game::gameRender()
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	
-
 
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
@@ -282,7 +250,6 @@ void Game::gameRender()
 	// Linking shaders
 	glUseProgram(programID);
 
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
 
@@ -291,7 +258,6 @@ void Game::gameRender()
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
-
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
@@ -303,7 +269,6 @@ void Game::gameRender()
 
 	GLint directionalLightDiffuseColourLocation = glGetUniformLocation(programID, "directionalLight.diffuseColour");
 	GLint directionalLightSpecularColourLocation = glGetUniformLocation(programID, "directionalLight.specularColour");
-
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
 	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
@@ -314,7 +279,6 @@ void Game::gameRender()
 	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
 	GLint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
 
-	//GLint lightDirectionLocation = glGetUniformLocation(programID, "lightDirection");
 	GLint lightDirectionLocation = glGetUniformLocation(programID, "directionalLight.direction");
 
 	GLint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
@@ -340,28 +304,22 @@ void Game::gameRender()
 	GLint numberOfPointLightsLocation = glGetUniformLocation(programID, "numberOfPointLights");
 
 	// Send the uniforms across
-
 	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
 	glUniform1i(diffuseTextureLocation, 0);
 	glUniform1i(specularTextureLocation, 1);
-	//glUniform1i(diffuseTextureTreeLocation, 2);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
 	glUniform4fv(specularMaterialColourLocation, 1, value_ptr(specularMaterialColour));
 
 	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
-	//glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
-	//glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
 
 	glUniform4fv(directionalLightDiffuseColourLocation, 1, glm::value_ptr(diffuseLightColour));
 	glUniform4fv(directionalLightSpecularColourLocation, 1, glm::value_ptr(specularLightColour));
 
 	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
-
-	//glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
 
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
@@ -374,38 +332,25 @@ void Game::gameRender()
 
 	glUniform1i(numberOfPointLightsLocation, PointLights.size());
 	
-	turnspeed = turnspeed + 0.001 * deltaTime;
+	
 	if (tree1)
 	{
-
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
-		//glUniform1i(diffuseTextureLocation, 2);
-		tree2->setRotation(0, turnspeed, 0);
-		tree1->update();
 		tree1->render();
-
 	}
 
 	if (tree2)
 	{
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
-		//glUniform1i(diffuseTextureLocation, 2);
-		
-		tree2->update();
 		tree2->render();
-
 	}
 	
 	if (fire)
 	{
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(fire->modelMatrix));
 		glUniform1i(diffuseTextureLocation, 0);
-		
-		fire->update();
 		fire->render();
-
 	}
-	
 
 	SDL_GL_SwapWindow(window->getWindow());
 
@@ -584,7 +529,6 @@ void Game::gameInputEvents()
 
 		}
 	}
-
 }
 
 void Game::gameClean()
@@ -594,9 +538,6 @@ void Game::gameClean()
 	glDeleteTextures(1, &diffuseTextureID);
 	glDeleteTextures(1, &specularTextureID);
 	
-
-	//Delete Context
-	//SDL_GL_DeleteContext(gl_Context);
 	if (glSetup)
 	{
 		delete glSetup;
