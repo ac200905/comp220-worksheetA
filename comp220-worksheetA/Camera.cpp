@@ -5,7 +5,7 @@
 Camera::Camera(float initFoV, float initNearClip, float initFarClip)
 {
 	//Initialise the variables
-	position = vec3(-10, 5, 0);
+	position = vec3(-10, 3, 0);
 	target = vec3(0, 0, 0);
 	upVector = vec3(0, 1, 0);
 	FoV = initFoV;

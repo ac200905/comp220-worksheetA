@@ -27,10 +27,13 @@ out vec4 colour;
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 
+uniform sampler2D diffuseTextureTree;
+
 uniform vec4 ambientMaterialColour;
 uniform vec4 diffuseMaterialColour;
 uniform vec4 specularMaterialColour;
 uniform float specularMaterialPower;
+uniform float lightIntensity;
 
 uniform DirectionalLight directionalLight;                               //
 
@@ -40,6 +43,7 @@ uniform int numberOfPointLights;                                           //
 uniform vec4 ambientLightColour;
 
 const float levels = 4.0;
+
 
 vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 lightDirection,vec4 diffuseTextureColour,vec4 specularTextureColour)
 {
@@ -53,7 +57,7 @@ vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 
 	float nDoth=pow(clamp(dot(vertexNormalOut,halfWay),0.0,1.0),specularMaterialPower);
 
 	return 	(diffuseLightColour*nDotl*diffuseMaterialColour*diffuseTextureColour*brightness)+
-			(specularLightColour*nDoth*specularMaterialColour*specularTextureColour);
+			(specularLightColour*nDoth*specularMaterialColour*specularTextureColour*0); //eliminate specular lighting for the moment
 }
 
 vec4 CalculatePointLight(int currentLightIndex,vec4 diffuseTextureColour,vec4 specularTextureColour)
@@ -67,7 +71,7 @@ vec4 CalculatePointLight(int currentLightIndex,vec4 diffuseTextureColour,vec4 sp
 									lightDirection,
 									diffuseTextureColour,specularTextureColour);
 
-	float attenuation=1.0/(1.0+0.1*lightDistance+0.01*lightDistance*lightDistance);
+	float attenuation=1.0/(1.0+0.1*lightIntensity*0.001*lightDistance+0.01*lightDistance*lightDistance);
 
 	return colour*attenuation;
 }
@@ -83,6 +87,10 @@ vec4 CalculateDirectionLightColour(vec4 diffuseTextureColour,vec4 specularTextur
 
 void main()
 {
+	
+
+	
+
 	vec4 diffuseTextureColour=texture(diffuseTexture,vertexTextureCoordOut);
 
 	vec4 specularTextureColour=texture(specularTexture,vertexTextureCoordOut);

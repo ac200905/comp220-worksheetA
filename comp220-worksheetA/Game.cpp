@@ -1,5 +1,5 @@
 #include "Game.h"
-
+#include <time.h>
 #include <iostream>
 
 // Should refactor game loop out of main.cpp
@@ -31,27 +31,73 @@ void Game::gameInit()
 	float deltaTime = 0.0f;	// Time between this frame and last frame
 	float lastFrame = 0.0f; // Time of last frame
 
+
 	bool running = true;
 
 	treeMesh = new MeshCollection();
-	loadMeshFromFile("lowpolytree.fbx", treeMesh);
+	//loadMeshFromFile("lowpolytree1.fbx", treeMesh);
+	loadMeshFromFile("tree.dae", treeMesh);
+
+	grassMesh = new MeshCollection();
+	loadMeshFromFile("grasspatch.obj", grassMesh);
+
+	lampMesh = new MeshCollection();
+	loadMeshFromFile("lamp.fbx", lampMesh);
+
+	barrelMesh = new MeshCollection();
+	loadMeshFromFile("barrel.fbx", barrelMesh);
+
+	tentMesh = new MeshCollection();
+	loadMeshFromFile("Tent.obj", tentMesh);
+
+	rockMesh = new MeshCollection();
+	loadMeshFromFile("Rockfbx.fbx", rockMesh);
 
 	fireMesh = new MeshCollection();
 	loadMeshFromFile("campfire.fbx", fireMesh);
 
 	// Textures
-	diffuseTextureID = loadTextureFromFile("tree.png");
+	diffuseTextureID = loadTextureFromFile("tree2.png");
+	diffuseTextureID_Grass = loadTextureFromFile("dirttexture.png");
+	diffuseTextureID_Barrel = loadTextureFromFile("barreltexture.png");
+	diffuseTextureID_Lamp = loadTextureFromFile("lampred.png");
+	//diffuseTextureID_Rock = loadTextureFromFile("RockTexture.jpg");
+	diffuseTextureID_Rock = loadTextureFromFile("rockgrey.png");
+	diffuseTextureID_Tent = loadTextureFromFile("tentblue.png");
+	diffuseTextureID_Tree = loadTextureFromFile("tree2.png");
+	diffuseTextureID_Campfire = loadTextureFromFile("campfire.jpg");
 	specularTextureID = loadTextureFromFile("specmap.png");
 
 	// Load shaders
 	programID = LoadShaders("vertBlinnPhongPL.glsl", "fragBlinnPhongPL.glsl");
 
 	// Set up new game objects
+	grass = new GameObject();
+	grass->giveMesh(grassMesh);
+
 	tree1 = new GameObject();
 	tree1->giveMesh(treeMesh);
+	TreeList.push_back(tree1);
 
 	tree2 = new GameObject();
 	tree2->giveMesh(treeMesh);
+	TreeList.push_back(tree2);
+
+	tree3 = new GameObject();
+	tree3->giveMesh(treeMesh);
+	TreeList.push_back(tree3);
+
+	barrel = new GameObject();
+	barrel->giveMesh(barrelMesh);
+
+	lamp = new GameObject();
+	lamp->giveMesh(lampMesh);
+
+	tent = new GameObject();
+	tent->giveMesh(tentMesh);
+
+	rock1 = new GameObject();
+	rock1->giveMesh(rockMesh);
 
 	fire = new GameObject();
 	fire->giveMesh(fireMesh);
@@ -86,10 +132,18 @@ void Game::gameLoop()
 	// Game loop
 	while (running)
 	{
+		const int FPS = 60;
+		const int frameDelay = 1000 / FPS;
+
 		// Update deltatime
 		float thisFrame = SDL_GetTicks();
 		deltaTime = thisFrame - lastFrame;
 		lastFrame = thisFrame;
+
+		if (frameDelay > deltaTime)
+		{
+			SDL_Delay(frameDelay - deltaTime);
+		}
 
 		gameInputEvents();
 
@@ -172,25 +226,81 @@ void Game::gameUpdate()
 
 	turnspeed = turnspeed + 0.001 * deltaTime;
 
+	if (grass)
+	{
+		grass->scale = vec3(0.1);
+		grass->position = vec3(0, 0, 0);
+		grass->setRotation(radians(-90.0f), 0, 0);
+		grass->update();
+	}
+
 	if (tree1)
 	{
-		tree1->scale = vec3(1.5);
-		tree1->position = vec3(0, -1.7, -7);
+		tree1->scale = vec3(2.5);
+		//tree1->position = vec3(0, -1.7, -7);
+		tree1->position = vec3(0, 0.5, -7);
+		//tree1->setRotation(radians(-90.0f), 0, radians(-45.0f));
 		tree1->update();
 	}
 
 	if (tree2)
 	{
-		tree2->scale = vec3(1.5);
-		tree2->position = vec3(5, -1.7, 7);
-		tree2->setRotation(0, turnspeed, 0);
+		tree2->scale = vec3(2.5);
+		//tree2->position = vec3(5, -1.7, 7);
+		tree2->position = vec3(5, 0.5, 7);
+		//tree2->setRotation(radians(-90.0f), 0, radians(-45.0f));
 		tree2->update();
+	}
+
+	if (tree3)
+	{
+		tree3->scale = vec3(2.5);
+		
+		tree3->position = vec3(-5, 0, -7);
+		
+		tree3->update();
+	}
+
+	if (lamp)
+	{
+		lamp->scale = vec3(0.002);
+		lamp->position = vec3(-3, 2.5, -4);
+		lamp->setRotation(0, 0, 0);
+		lamp->update();
+		lamp->render();
+	}
+
+	if (barrel)
+	{
+		barrel->scale = vec3(0.02);
+		barrel->position = vec3(-3, 1, -4);
+		barrel->setRotation(0, 0, 0);
+		barrel->update();
+		barrel->render();
+	}
+
+	if (tent)
+	{
+		tent->scale = vec3(0.05);
+		tent->position = vec3(6, 0.5, -4);
+		tent->setRotation(radians(-90.0f), 0, radians(-45.0f));
+		tent->update();
+		tent->render();
+	}
+
+	if (rock1)
+	{
+		rock1->scale = vec3(0.5);
+		rock1->position = vec3(0, 0, 5);
+		//rock1->setRotation(radians(-90.0f), 0, 0);
+		rock1->update();
+		rock1->render();
 	}
 
 	if (fire)
 	{
 		fire->scale = vec3(1);
-		fire->position = vec3(0, 0, 0);
+		fire->position = vec3(0, 1, 0);
 		fire->setRotation(radians(-90.0f), 0, 0);
 		fire->update();
 		fire->render();
@@ -231,6 +341,10 @@ void Game::gameRender()
 
 	float specularMaterialPower = 10000.0f;
 
+	//float lightIntensity = 9.0f;
+
+	
+
 	//Point light
 	std::vector<PointLight> PointLights;
 
@@ -240,6 +354,9 @@ void Game::gameRender()
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
 
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
@@ -274,6 +391,8 @@ void Game::gameRender()
 	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
 	GLint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
 	GLint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
+
+	GLint lightIntensityLocation = glGetUniformLocation(programID, "lightIntensity");
 	
 	GLint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
 	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
@@ -309,6 +428,7 @@ void Game::gameRender()
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
 	glUniform1i(diffuseTextureLocation, 0);
 	glUniform1i(specularTextureLocation, 1);
+	glUniform1i(diffuseTextureTreeLocation, 2);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
@@ -321,6 +441,8 @@ void Game::gameRender()
 
 	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
 
+	glUniform1f(lightIntensityLocation, lightIntensity);
+
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
 	for (int i = 0; i < PointLights.size(); i++)
@@ -332,26 +454,102 @@ void Game::gameRender()
 
 	glUniform1i(numberOfPointLightsLocation, PointLights.size());
 	
+	flickerThreshold += (rand() % 10 + 1);
+
+	if (flickerThreshold > 50)
+	{
+		lightFlicker = true;
+		flickerThreshold = 0;
+	}
+
+	if (lightFlicker == true)
+	{
+		lightIntensity = (rand() % 3000 + 3000); //range + start point
+		glUniform1f(lightIntensityLocation, lightIntensity);
+
+		lightFlicker = false;
+	}
+
 	
+
 	if (tree1)
 	{
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree1->modelMatrix));
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
 		tree1->render();
 	}
 
 	if (tree2)
 	{
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tree2->modelMatrix));
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
 		tree2->render();
+	}
+
+	if (barrel)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(barrel->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Barrel);
+		barrel->render();
+	}
+
+	if (lamp)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(lamp->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Lamp);
+		lamp->render();
+	}
+
+	if (grass)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(grass->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Grass);
+		grass->render();
+	}
+
+	if (tent)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(tent->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tent);
+		tent->render();
+	}
+
+	if (rock1)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(rock1->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Rock);
+		rock1->render();
 	}
 	
 	if (fire)
 	{
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(fire->modelMatrix));
 		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Campfire);
 		fire->render();
 	}
 
+	for (GameObject * obj : TreeList)
+	{
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(obj->modelMatrix));
+		glUniform1i(diffuseTextureLocation, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
+		obj->render();
+	}
 	SDL_GL_SwapWindow(window->getWindow());
 
 }
@@ -363,7 +561,7 @@ void Game::gameInputEvents()
 	while (SDL_PollEvent(&event))
 	{
 		// Testing controller - should be refactored to player controller
-		std::cout << event.caxis.value << std::endl;
+		//std::cout << event.caxis.value << std::endl;
 		if (SDL_CONTROLLERAXISMOTION)
 		{
 			if (event.caxis.which == 0)
@@ -554,6 +752,30 @@ void Game::gameClean()
 	{
 		delete treeMesh;
 		treeMesh = nullptr;
+	}
+
+	if (lampMesh)
+	{
+		delete lampMesh;
+		lampMesh = nullptr;
+	}
+
+	if (rockMesh)
+	{
+		delete rockMesh;
+		rockMesh = nullptr;
+	}
+
+	if (tentMesh)
+	{
+		delete tentMesh;
+		tentMesh = nullptr;
+	}
+
+	if (fireMesh)
+	{
+		delete fireMesh;
+		fireMesh = nullptr;
 	}
 
 	//Destroy the window and quit SDL2, NB we should do this after all cleanup in this order!!!

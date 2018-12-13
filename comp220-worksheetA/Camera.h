@@ -90,6 +90,7 @@ public:
 
 	void setPosition(vec3 Position)
 	{
+		Position.y = 3; // to simulate walking
 		position = Position;
 	}
 

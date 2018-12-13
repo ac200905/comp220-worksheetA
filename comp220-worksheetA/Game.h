@@ -47,13 +47,19 @@ public:
 
 	bool running = true;
 
+	bool lightFlicker = true;
 
+	int flickerThreshold;
+
+	int frameDelay;
 
 
 private:
 
 	float deltaTime;
 	float lastFrame;
+
+	float lightIntensity;
 
 	float turnspeed;
 	//std::map<std::string, bool> ControlActions;
@@ -87,6 +93,11 @@ private:
 	SDL_Event event;
 
 	MeshCollection * treeMesh;
+	MeshCollection * grassMesh;
+	MeshCollection * barrelMesh;
+	MeshCollection * lampMesh;
+	MeshCollection * tentMesh;
+	MeshCollection * rockMesh;
 	MeshCollection * fireMesh;
 
 	InputSetup* input;
@@ -95,11 +106,25 @@ private:
 
 	Camera* camera;
 
+	GameObject* grass;
 	GameObject* tree1;
 	GameObject* tree2;
+	GameObject* tree3;
+	GameObject* rock1;
+	GameObject* barrel;
+	GameObject* lamp;
+	GameObject* tent;
 	GameObject* fire;
 
+	std::vector<GameObject*> TreeList;
+
+	GLuint diffuseTextureID_Grass;
+	GLuint diffuseTextureID_Barrel;
+	GLuint diffuseTextureID_Lamp;
+	GLuint diffuseTextureID_Tent;
+	GLuint diffuseTextureID_Rock;
 	GLuint diffuseTextureID_Tree;
+	GLuint diffuseTextureID_Campfire;
 	GLuint diffuseTextureID;
 	GLuint specularTextureID;
 
