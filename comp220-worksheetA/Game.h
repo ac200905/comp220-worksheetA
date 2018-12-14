@@ -110,6 +110,9 @@ private:
 	GameObject* tree1;
 	GameObject* tree2;
 	GameObject* tree3;
+	GameObject* tree4;
+	GameObject* tree5;
+	GameObject* tree6;
 	GameObject* rock1;
 	GameObject* barrel;
 	GameObject* lamp;

@@ -59,7 +59,7 @@ void Game::gameInit()
 	// Textures
 	diffuseTextureID = loadTextureFromFile("tree2.png");
 	diffuseTextureID_Grass = loadTextureFromFile("dirttexture.png");
-	diffuseTextureID_Barrel = loadTextureFromFile("barreltexture.png");
+	diffuseTextureID_Barrel = loadTextureFromFile("barrel.png");
 	diffuseTextureID_Lamp = loadTextureFromFile("lampred.png");
 	//diffuseTextureID_Rock = loadTextureFromFile("RockTexture.jpg");
 	diffuseTextureID_Rock = loadTextureFromFile("rockgrey.png");
@@ -86,6 +86,18 @@ void Game::gameInit()
 	tree3 = new GameObject();
 	tree3->giveMesh(treeMesh);
 	TreeList.push_back(tree3);
+
+	tree4 = new GameObject();
+	tree4->giveMesh(treeMesh);
+	TreeList.push_back(tree4);
+
+	tree5 = new GameObject();
+	tree5->giveMesh(treeMesh);
+	TreeList.push_back(tree5);
+
+	tree6 = new GameObject();
+	tree6->giveMesh(treeMesh);
+	TreeList.push_back(tree6);
 
 	barrel = new GameObject();
 	barrel->giveMesh(barrelMesh);
@@ -252,13 +264,23 @@ void Game::gameUpdate()
 		tree2->update();
 	}
 
-	if (tree3)
-	{
+	if (tree3){
 		tree3->scale = vec3(2.5);
-		
 		tree3->position = vec3(-5, 0, -7);
-		
-		tree3->update();
+		tree3->update();}
+	if (tree4) {
+		tree4->scale = vec3(2.5);
+		tree4->position = vec3(7, 0, 2);
+		tree4->update();}
+	if (tree5) {
+		tree5->scale = vec3(2.5);
+		tree5->position = vec3(-5, 0, 6);
+		tree5->update();}
+	if (tree6) {
+		tree6->scale = vec3(2.5);
+		tree6->setRotation(0, 0, 0);
+		tree6->position = vec3(0, 0, 8);
+		tree6->update();
 	}
 
 	if (lamp)
@@ -291,7 +313,7 @@ void Game::gameUpdate()
 	if (rock1)
 	{
 		rock1->scale = vec3(0.5);
-		rock1->position = vec3(0, 0, 5);
+		rock1->position = vec3(0, 1, 3);
 		//rock1->setRotation(radians(-90.0f), 0, 0);
 		rock1->update();
 		rock1->render();
@@ -367,14 +389,14 @@ void Game::gameRender()
 	// Linking shaders
 	glUseProgram(programID);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
+	//glActiveTexture(GL_TEXTURE2);
+	//glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Tree);
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
