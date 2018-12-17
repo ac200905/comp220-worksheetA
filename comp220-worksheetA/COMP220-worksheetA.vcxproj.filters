@@ -54,6 +54,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -104,6 +107,9 @@
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleEmitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragShader.glsl" />
@@ -116,5 +122,7 @@
     <None Include="fragCelShader.glsl" />
     <None Include="vertBlinnPhongPL.glsl" />
     <None Include="fragBlinnPhongPL.glsl" />
+    <None Include="vertParticle.glsl" />
+    <None Include="fragParticle.glsl" />
   </ItemGroup>
 </Project>

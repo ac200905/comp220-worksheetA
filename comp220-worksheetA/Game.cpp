@@ -8,10 +8,100 @@ Game::Game()
 {
 	
 }
+/*
+struct Particle {
+	glm::vec2 Position, Velocity;
+	glm::vec4 Color;
+	GLfloat Life;
 
-
+	Particle()
+		: Position(0.0f), Velocity(0.0f), Color(1.0f), Life(0.0f) { }
+};
+*/
 Game::~Game()
 {
+}
+
+// Gets unused particles and respawns new ones, then decreases particle life by delta time and updates position
+void Game::updateParticles(GLfloat deltaTime)
+{
+	// Add new particles
+	for (GLuint i = 0; i < newParticles; ++i)
+	{
+		int unusedParticle = firstUnusedParticle();
+		respawnParticle(ParticleObjectList[unusedParticle]);
+	}
+	// Update all particles
+	for (GLuint i = 0; i < amount; ++i)
+	{
+		GameObject * p = ParticleObjectList[i];
+		p->DecreaseLife(deltaTime); // reduce life
+		if (p->GetLife() > 0.0f)
+		{	// particle still alive: update particle
+			vec3 currentPos = p->getPosition();
+			vec3 objectDirection = vec3(0,1,0); //up
+			currentPos = currentPos + (objectDirection / speed); // increase the division to slow down the movement
+			p->setPositionVec3(currentPos);
+		}
+		std::cout << i << std::endl;
+		p->update();
+		
+	}
+}
+
+void Game::initParticles()
+{
+	// Create the default amount of particle instances
+	for (GLuint i = 0; i < amount; ++i)
+	{
+		//objectManager->createParticleObject("Model/star.obj", "Model/light3.png", 15.0f, 15.0f, -20.0f, vec3(0.0085f, 0.0085f, 0.0085f), vec3(1.0f, 1.0f, 0.0f), 0.5f, 0.0f, lightShader);
+		particleMesh = new MeshCollection();
+		loadMeshFromFile("lamp.fbx", particleMesh);
+
+		//diffuseTextureID_Lamp = loadTextureFromFile("lampred.png");
+
+		GameObject * particle = new GameObject();
+		particle->giveMesh(particleMesh);
+		particle->scale = vec3(0.01);
+		particle->position = vec3(0, 0, 0);
+		particle->setRotation(radians(-90.0f), 0, 0);
+		particle->update();
+
+		ParticleObjectList.push_back(particle);
+
+		
+	}
+}
+
+
+GLuint Game::firstUnusedParticle()
+{
+	
+	// Search from last used particle
+	for (GLuint i = lastUsedParticle; i < amount; ++i) {
+		if (ParticleObjectList[i]->GetLife() <= 0.0f) {
+			lastUsedParticle = i;
+			return i;
+		}
+	}
+	// Otherwise serach from the begining
+	for (GLuint i = 0; i < lastUsedParticle; ++i) {
+		if (ParticleObjectList[i]->GetLife() <= 0.0f) {
+			lastUsedParticle = i;
+			return i;
+		}
+	}
+	// If there are no dead particles use the first one in the list
+	lastUsedParticle = 0;
+	return 0;
+}
+
+// Respawn the particle and give it a new random direction
+void Game::respawnParticle(GameObject * particle)
+{
+	particle->setPositionVec3(vec3(0,0,0));
+	particle->resetLife();
+	
 }
 
 void Game::gameInit()
@@ -139,11 +229,13 @@ void Game::gameLoop()
 
 	gameInit();
 
-	
+	initParticles();
 
 	// Game loop
 	while (running)
 	{
+	
+
 		const int FPS = 60;
 		const int frameDelay = 1000 / FPS;
 
@@ -160,9 +252,9 @@ void Game::gameLoop()
 		gameInputEvents();
 
 		gameUpdate();
-
+		updateParticles(deltaTime);
 		gameRender();
-
+		
 	}
 
 	gameClean();
@@ -170,6 +262,9 @@ void Game::gameLoop()
 
 void Game::gameUpdate()
 {
+	// Index of the last particle
+	GLuint lastUsedParticle = 0;
+
 	cameraPosition = camera->getPosition();
 	
 
@@ -328,6 +423,12 @@ void Game::gameUpdate()
 		fire->render();
 	}
 
+	//updateParticles(deltaTime);
+
+	if (particle)
+	{
+		particle->render();
+	}
 }
 
 void Game::gameRender()
@@ -563,6 +664,8 @@ void Game::gameRender()
 		glBindTexture(GL_TEXTURE_2D, diffuseTextureID_Campfire);
 		fire->render();
 	}
+
+	
 
 	for (GameObject * obj : TreeList)
 	{

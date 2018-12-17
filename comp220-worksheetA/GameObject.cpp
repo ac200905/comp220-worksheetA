@@ -35,3 +35,8 @@ void GameObject::render()
 	// Render the object
 	newMesh->render();
 }
+
+void GameObject::resetLife()
+{
+	life = (rand() % (lifeMax + 1 - lifeMin)) + lifeMin;
+}

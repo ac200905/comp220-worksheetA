@@ -33,6 +33,16 @@ public:
 	Game();
 	~Game();
 
+	void particleGen();
+
+	void updateParticles(GLfloat deltaTime);
+
+	GLuint firstUnusedParticle();
+
+	void initParticles();
+
+	void respawnParticle(GameObject * particle);
+
 	void gameInit();
 
 	void gameLoop();
@@ -53,6 +63,14 @@ public:
 
 	int frameDelay;
 
+	int amount = 10;
+
+	GLuint newParticles = 10;
+
+	float speed = 100.0f;
+
+	// Index of the last particle
+	GLuint lastUsedParticle = 0;
 
 private:
 
@@ -92,6 +110,7 @@ private:
 
 	SDL_Event event;
 
+	MeshCollection * particleMesh;
 	MeshCollection * treeMesh;
 	MeshCollection * grassMesh;
 	MeshCollection * barrelMesh;
@@ -106,6 +125,7 @@ private:
 
 	Camera* camera;
 
+	GameObject* particle;
 	GameObject* grass;
 	GameObject* tree1;
 	GameObject* tree2;
@@ -120,6 +140,7 @@ private:
 	GameObject* fire;
 
 	std::vector<GameObject*> TreeList;
+	std::vector<GameObject*> ParticleObjectList;
 
 	GLuint diffuseTextureID_Grass;
 	GLuint diffuseTextureID_Barrel;
