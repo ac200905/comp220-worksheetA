@@ -24,6 +24,7 @@
 #include "GameObject.h"
 #include "Timer.h"
 #include "Light.h"
+#include "glm/ext.hpp"
 
 using namespace glm;
 
@@ -63,14 +64,14 @@ public:
 
 	int frameDelay;
 
-	int amount = 10;
+	int amount = 40;
 
-	GLuint newParticles = 10;
+	GLuint numParticles = 40;
 
-	float speed = 100.0f;
+	float speed = 20.0f;
 
 	// Index of the last particle
-	GLuint lastUsedParticle = 0;
+	GLuint lastCheckedParticle = 0;
 
 private:
 
@@ -79,7 +80,6 @@ private:
 
 	float lightIntensity;
 
-	float turnspeed;
 	//std::map<std::string, bool> ControlActions;
 	//ControlActions["rotateCameraLeft"] = false;
 
@@ -133,13 +133,14 @@ private:
 	GameObject* tree4;
 	GameObject* tree5;
 	GameObject* tree6;
-	GameObject* rock1;
+	GameObject* rock;
 	GameObject* barrel;
 	GameObject* lamp;
 	GameObject* tent;
 	GameObject* fire;
 
 	std::vector<GameObject*> TreeList;
+	std::vector<GameObject*> MiscObjectList;
 	std::vector<GameObject*> ParticleObjectList;
 
 	GLuint diffuseTextureID_Grass;
@@ -149,12 +150,14 @@ private:
 	GLuint diffuseTextureID_Rock;
 	GLuint diffuseTextureID_Tree;
 	GLuint diffuseTextureID_Campfire;
+	GLuint diffuseTextureID_Fire;
 	GLuint diffuseTextureID;
 	GLuint specularTextureID;
 
 
 
 	GLuint programID;
+	GLuint programID_Fire;
 
 	GLuint MVPLocation;
 

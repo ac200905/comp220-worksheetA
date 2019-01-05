@@ -63,21 +63,28 @@ public:
 		scale = vec3(x, y, z);
 	};
 
+	void setScaleVec3(glm::vec3 newScale)
+	{
+		scale = newScale;
+	};
+
 	vec3 getPosition()
 	{
 		return position;
 	}
 
-	const int lifeMax = 1000;
+
+	// Particle lifetime
+	const int lifeMax = 1100;
 	const int lifeMin = 800;
 	float life = 1000.0f;
 
-	void DecreaseLife(float deltaTime)
+	void decreaseLife(float deltaTime)
 	{
 		life -= deltaTime;
 	}
 
-	float GetLife()
+	float getLife()
 	{
 		return life;
 	}

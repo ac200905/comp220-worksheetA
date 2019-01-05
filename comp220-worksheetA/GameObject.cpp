@@ -38,5 +38,5 @@ void GameObject::render()
 
 void GameObject::resetLife()
 {
-	life = (rand() % (lifeMax + 1 - lifeMin)) + lifeMin;
+	life = (rand() % (lifeMax - lifeMin)) + lifeMin;
 }
