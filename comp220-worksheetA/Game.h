@@ -68,7 +68,7 @@ public:
 
 	GLuint numParticles = 40;
 
-	float speed = 20.0f;
+	float speed = 300.0f;
 
 	// Index of the last particle
 	GLuint lastCheckedParticle = 0;

@@ -40,12 +40,12 @@ void Game::updateParticles(GLfloat deltaTime)
 		{	// particle still alive: update particle
 			vec3 currentPos = particle->getPosition();
 			vec3 objectDirection = vec3(0,1,0); //up
-			currentPos = currentPos + (objectDirection / speed); // increase the division to slow down the movement
+			currentPos = currentPos + (objectDirection / speed * deltaTime); // increase the division to slow down the movement
 			particle->setPositionVec3(currentPos);
 
-			vec3 scaleBack = vec3(0.003f);
+			vec3 scaleBack = vec3(0.0002f);
 			vec3 currentScale = particle->getScale();
-			currentScale = currentScale - scaleBack;
+			currentScale = (currentScale - scaleBack * deltaTime) ;
 			particle->setScaleVec3(currentScale);
 
 			//std::cout << to_string(particle->getScale()) << std::endl;
@@ -540,9 +540,9 @@ void Game::gameRender()
 	glUniform1i(numberOfPointLightsLocation, PointLights.size());
 	
 	// Create a light flickering effect from the campfire
-	flickerThreshold += (rand() % 10 + 1);
+	flickerThreshold += (rand() % 10 + 1)* deltaTime;
 
-	if (flickerThreshold > 30)
+	if (flickerThreshold > 300)
 	{
 		lightFlicker = true;
 		flickerThreshold = 0;
