@@ -5,19 +5,9 @@
 
 
 Game::Game()
-{
-	
+{	
 }
-/*
-struct Particle {
-	glm::vec2 Position, Velocity;
-	glm::vec4 Color;
-	GLfloat Life;
 
-	Particle()
-		: Position(0.0f), Velocity(0.0f), Color(1.0f), Life(0.0f) { }
-};
-*/
 Game::~Game()
 {
 }
@@ -250,31 +240,31 @@ void Game::gameInit()
 		tree6->setRotation(0, 0, 0);
 		tree6->position = vec3(0, 0, 8);
 	}
-	if (grass){
+	if (grass) {
 		grass->scale = vec3(0.1);
 		grass->position = vec3(0, 0, 0);
 		grass->setRotation(radians(-90.0f), 0, 0);
 	}
-	if (lamp){
+	if (lamp) {
 		lamp->scale = vec3(0.002);
 		lamp->position = vec3(-3, 2.5, -4);
 		lamp->setRotation(0, 0, 0);
 	}
-	if (barrel){
+	if (barrel) {
 		barrel->scale = vec3(0.02);
 		barrel->position = vec3(-3, 1, -4);
 		barrel->setRotation(0, 0, 0);
 	}
-	if (tent){
+	if (tent) {
 		tent->scale = vec3(0.05);
 		tent->position = vec3(6, 0.5, -4);
 		tent->setRotation(radians(-90.0f), 0, radians(-45.0f));
 	}
-	if (rock){
+	if (rock) {
 		rock->scale = vec3(0.5);
 		rock->position = vec3(0, 1, 3);
 	}
-	if (fire){
+	if (fire) {
 		fire->scale = vec3(1);
 		fire->position = vec3(0, 1, 0);
 		fire->setRotation(radians(-90.0f), 0, 0);
@@ -330,7 +320,7 @@ void Game::gameLoop()
 		gameInputEvents();
 
 		gameUpdate();
-		updateParticles(deltaTime);
+		
 		gameRender();
 		
 	}
@@ -340,11 +330,11 @@ void Game::gameLoop()
 
 void Game::gameUpdate()
 {
-	// Index of the last particle
-	GLuint lastUsedParticle;
 
 	cameraPosition = camera->getPosition();
-	
+
+	// Update particle generator
+	updateParticles(deltaTime);
 
 	if (window->getIsFullscreen())
 	{
@@ -359,47 +349,47 @@ void Game::gameUpdate()
 	// Changing camera pitch and yaw
 	if (rotateCameraLeft == true)
 	{
-		camera->increaseYaw(-2);
+		camera->increaseYaw(-pitchSpeed * deltaTime);
 	}
 	if (rotateCameraRight == true)
 	{
-		camera->increaseYaw(2);
+		camera->increaseYaw(pitchSpeed * deltaTime);
 	}
 	if (rotateCameraUp == true)
 	{
-		camera->increasePitch(-2);
+		camera->increasePitch(-yawSpeed * deltaTime);
 	}
 	if (rotateCameraDown == true)
 	{
-		camera->increasePitch(2);
+		camera->increasePitch(yawSpeed * deltaTime);
 	}
 
 	// Strafing and moving towards or away from target
 	if (moveCameraLeft == true)
 	{
-		camera->moveXAxis(1);
+		camera->moveXAxis(walkSpeed * deltaTime);
 	}
 	if (moveCameraRight == true)
 	{
-		camera->moveXAxis(-1);
+		camera->moveXAxis(-walkSpeed * deltaTime);
 	}
 	if (moveCameraForward == true)
 	{
-		camera->moveZAxis(1);
+		camera->moveZAxis(walkSpeed * deltaTime);
 	}
 	if (moveCameraBack == true)
 	{
-		camera->moveZAxis(-1);
+		camera->moveZAxis(-walkSpeed * deltaTime);
 	}
 
-	// Moving camera up/down
+	// Moving camera up/down on the y axis
 	if (moveCameraUp == true)
 	{
-		camera->moveYAxis(1);
+		camera->moveYAxis(walkSpeed * deltaTime);
 	}
 	if (moveCameraDown == true)
 	{
-		camera->moveYAxis(-1);
+		camera->moveYAxis(-walkSpeed * deltaTime);
 	}
 
 	// Handle keyboard input
@@ -409,7 +399,7 @@ void Game::gameUpdate()
 	playerController.joystickControls();
 
 
-
+	// Update objects
 	for (GameObject * obj : TreeList){
 		obj->update();
 	}
@@ -436,7 +426,7 @@ void Game::gameRender()
 	float specularMaterialPower = 10000.0f;
 
 
-	//Point light
+	//Point lights
 	std::vector<PointLight> PointLights;
 	
 	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
@@ -542,7 +532,7 @@ void Game::gameRender()
 	// Create a light flickering effect from the campfire
 	flickerThreshold += (rand() % 10 + 1)* deltaTime;
 
-	if (flickerThreshold > 300)
+	if (flickerThreshold > 600)
 	{
 		lightFlicker = true;
 		flickerThreshold = 0;
@@ -823,62 +813,52 @@ void Game::gameClean()
 	glDeleteTextures(1, &diffuseTextureID_Fire);
 
 	
-	if (glSetup)
-	{
+	if (glSetup){
 		delete glSetup;
 		glSetup = nullptr;
 	}
 
-	if (window)
-	{
+	if (window){
 		delete window;
 		window = nullptr;
 	}
 
-	if (treeMesh)
-	{
+	if (treeMesh){
 		delete treeMesh;
 		treeMesh = nullptr;
 	}
 
-	if (lampMesh)
-	{
+	if (lampMesh){
 		delete lampMesh;
 		lampMesh = nullptr;
 	}
 
-	if (rockMesh)
-	{
+	if (rockMesh){
 		delete rockMesh;
 		rockMesh = nullptr;
 	}
 
-	if (tentMesh)
-	{
+	if (tentMesh){
 		delete tentMesh;
 		tentMesh = nullptr;
 	}
 
-	if (fireMesh)
-	{
+	if (fireMesh){
 		delete fireMesh;
 		fireMesh = nullptr;
 	}
 	
-	if (grassMesh)
-	{
+	if (grassMesh){
 		delete grassMesh;
 		grassMesh = nullptr;
 	}
 
-	if (barrelMesh)
-	{
+	if (barrelMesh){
 		delete barrelMesh;
 		barrelMesh = nullptr;
 	}
 
-	if (particleMesh)
-	{
+	if (particleMesh){
 		delete particleMesh;
 		particleMesh = nullptr;
 	}

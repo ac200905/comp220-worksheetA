@@ -78,6 +78,10 @@ private:
 	float deltaTime;
 	float lastFrame;
 
+	float pitchSpeed = 0.1f;
+	float yawSpeed = 0.1f;
+	float walkSpeed = 0.005f;
+
 	float lightIntensity;
 
 	//std::map<std::string, bool> ControlActions;
