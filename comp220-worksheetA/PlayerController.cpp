@@ -27,7 +27,7 @@ void PlayerController::keyboardControls(float deltaTime)
 {
 	cameraPosition = playerCamera->getPosition();
 	cameraTarget = playerCamera->getTarget();
-	moveSpeed = 0.01f * deltaTime;
+	moveSpeed = mouseSensitivity * deltaTime;
 
 	// Check player inputs.
 	// Move towards camera target
@@ -72,6 +72,7 @@ void PlayerController::keyboardControls(float deltaTime)
 		playerCamera->setViewMatrix();
 	}
 
+
 }
 
 // Manage the mouse inputs
@@ -101,5 +102,4 @@ void PlayerController::joystickControls()
 	// Calculate new camera rotation
 	playerCamera->calculateCameraRotation();
 
-	
 }

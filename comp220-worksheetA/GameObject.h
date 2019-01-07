@@ -35,6 +35,8 @@ public:
 
 	void render();
 
+	void resetLife();
+
 	// Give the GameObject a loaded mesh
 	void giveMesh(MeshCollection *mesh)
 	{
@@ -44,6 +46,11 @@ public:
 	void setPosition(float x, float y, float z)
 	{
 		position = vec3(x, y, z);
+	};
+
+	void setPositionVec3(glm::vec3 newPos)
+	{
+		position = newPos;
 	};
 
 	void setRotation(float x, float y, float z)
@@ -56,9 +63,30 @@ public:
 		scale = vec3(x, y, z);
 	};
 
+	void setScaleVec3(glm::vec3 newScale)
+	{
+		scale = newScale;
+	};
+
 	vec3 getPosition()
 	{
 		return position;
+	}
+
+
+	// Particle lifetime
+	const int lifeMax = 1100;
+	const int lifeMin = 800;
+	float life = 1000.0f;
+
+	void decreaseLife(float deltaTime)
+	{
+		life -= deltaTime;
+	}
+
+	float getLife()
+	{
+		return life;
 	}
 
 	vec3 getRotation()
