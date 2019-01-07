@@ -27,8 +27,6 @@ out vec4 colour;
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 
-uniform sampler2D diffuseTextureTree;
-
 uniform vec4 ambientMaterialColour;
 uniform vec4 diffuseMaterialColour;
 uniform vec4 specularMaterialColour;
@@ -93,9 +91,6 @@ vec4 CalculateDirectionLightColour(vec4 diffuseTextureColour,vec4 specularTextur
 void main()
 {
 	
-
-	
-
 	vec4 diffuseTextureColour=texture(diffuseTexture,vertexTextureCoordOut);
 
 	vec4 specularTextureColour=texture(specularTexture,vertexTextureCoordOut);

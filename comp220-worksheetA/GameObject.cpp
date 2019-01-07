@@ -16,7 +16,6 @@ void GameObject::update()
 	// Calculate Matricies for new object
 	translationMatrix = translate(position);
 
-
 	rotationMatrix = rotate(rotation.x, vec3(1.0f, 0.0f, 0.0f)) *
 		rotate(rotation.y, vec3(0.0f, 1.0f, 0.0f)) *
 		rotate(rotation.z, vec3(0.0f, 0.0f, 1.0f));
@@ -25,9 +24,6 @@ void GameObject::update()
 
 	// Create the modelMatrix for the object
 	modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
-	// Render the object
-	//newModel->render();
 }
 
 void GameObject::render()
@@ -36,6 +32,7 @@ void GameObject::render()
 	newMesh->render();
 }
 
+// Give particle a semi-random lifespan
 void GameObject::resetLife()
 {
 	life = (rand() % (lifeMax - lifeMin)) + lifeMin;

@@ -34,46 +34,48 @@ public:
 	Game();
 	~Game();
 
-	void particleGen();
 
 	void updateParticles(GLfloat deltaTime);
-
-	GLuint firstUnusedParticle();
 
 	void initParticles();
 
 	void respawnParticle(GameObject * particle);
 
-	void gameInit();
+	void init();
 
-	void gameLoop();
+	void loop();
 
-	void gameRender();
+	void render();
 
-	void gameUpdate();
+	void update();
 
-	void gameInputEvents();
+	void inputEvents();
 
-	void gameClean();
+	void clean();
 
 	bool running = true;
 
+	
+	
+private:
+
 	bool lightFlicker = true;
 
-	int flickerThreshold;
+	int flickerThreshold = 600;
+
+	int flickerUpdate;
 
 	int frameDelay;
 
-	int amount = 40;
-
 	GLuint numParticles = 40;
 
-	float speed = 300.0f;
+	// Higher value means a slower particle speed
+	float particleSpeed = 300.0f;
+
+	GLuint findDeadParticle();
 
 	// Index of the last particle
-	GLuint lastCheckedParticle = 0;
-	
-private:
+	GLuint lastDeadParticle = 0;
 
 	float deltaTime;
 	float lastFrame;

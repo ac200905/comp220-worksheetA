@@ -2,7 +2,8 @@
 #include <time.h>
 #include <iostream>
 
-
+//Demo video of the game working
+//https://www.youtube.com/watch?v=MDfq-7ug-EM
 
 Game::Game()
 {	
@@ -12,52 +13,21 @@ Game::~Game()
 {
 }
 
-// Gets unused particles and respawns new ones, then decreases particle life by delta time and updates position
-void Game::updateParticles(GLfloat deltaTime)
-{
-	// Add new particles
-	for (GLuint i = 0; i < numParticles; ++i)
-	{
-		int unusedParticle = firstUnusedParticle();
-		respawnParticle(ParticleObjectList[unusedParticle]);
-	}
-	// Update all particles
-	for (GLuint i = 0; i < amount; ++i)
-	{
-		GameObject * particle = ParticleObjectList[i];
-		particle->decreaseLife(deltaTime); // reduce life of particle
-		if (particle->getLife() > 0.0f)
-		{	// particle still alive: update particle
-			vec3 currentPos = particle->getPosition();
-			
-			currentPos = currentPos + (objectDirection / speed * deltaTime); // increase the division to slow down the movement
-			particle->setPositionVec3(currentPos);
+/* -------------------
+	Particle Emitter 
+----------------------*/
 
-			
-			vec3 currentScale = particle->getScale();
-			currentScale = (currentScale - scaleBack * deltaTime) ;
-			particle->setScaleVec3(currentScale);
+//http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
 
-			//std::cout << to_string(particle->getScale()) << std::endl;
-			//std::cout << to_string(particle->getPosition()) << std::endl;
-
-		}
-		//std::cout << i << std::endl;
-		particle->update();
-		
-	}
-}
-
+// Initialise particle gameobjects
 void Game::initParticles()
 {
 	// Create the default amount of particle instances
-	for (GLuint i = 0; i < amount; ++i)
+	for (GLuint i = 0; i < numParticles; ++i)
 	{
-		//objectManager->createParticleObject("Model/star.obj", "Model/light3.png", 15.0f, 15.0f, -20.0f, vec3(0.0085f, 0.0085f, 0.0085f), vec3(1.0f, 1.0f, 0.0f), 0.5f, 0.0f, lightShader);
+		// Create Mesh for particle
 		particleMesh = new MeshCollection();
 		loadMeshFromFile("Models/cube.fbx", particleMesh);
-
-		//diffuseTextureID_Lamp = loadTextureFromFile("lampred.png");
 
 		GameObject * particle = new GameObject();
 		particle->giveMesh(particleMesh);
@@ -68,30 +38,56 @@ void Game::initParticles()
 
 		ParticleObjectList.push_back(particle);
 
-		//std::cout << i << std::endl;
 	}
 }
 
 
-GLuint Game::firstUnusedParticle()
+// Main particle update loop
+void Game::updateParticles(GLfloat deltaTime)
 {
-	
-	// Search from last used particle
-	for (GLuint i = lastCheckedParticle; i < amount; ++i) {
+	// Respawning dead particles
+	for (GLuint i = 0; i < numParticles; ++i){
+		// Finds the index in the ParticleObjectList of the last particle that died
+		int deadParticle = findDeadParticle();
+		// Respawns the last particle that died
+		respawnParticle(ParticleObjectList[deadParticle]);
+	}
+	// Update all particles
+	for (GLuint i = 0; i < numParticles; ++i){
+		GameObject * particle = ParticleObjectList[i];
+		// Reduce life of current particle
+		particle->decreaseLife(deltaTime); 
+		if (particle->getLife() > 0.0f){	
+			// Particle still alive: update particle position and scale
+			// Update particle position to imitate rising fire
+			vec3 currentPos = particle->getPosition();
+			currentPos = currentPos + (objectDirection / particleSpeed * deltaTime);
+			particle->setPositionVec3(currentPos);
+			// Update particle scale to give a shrinking effect
+			vec3 currentScale = particle->getScale();
+			currentScale = (currentScale - scaleBack * deltaTime) ;
+			particle->setScaleVec3(currentScale);
+
+		}
+		// Update particle GameObject
+		particle->update();
+	}
+}
+
+
+// Find index of that last particle that died
+GLuint Game::findDeadParticle()
+{
+	// Start from the idex of the last particle that died.
+	for (GLuint i = lastDeadParticle; i < numParticles; ++i) {
+		// If the particle is dead, becomes lastDeadParticle
 		if (ParticleObjectList[i]->getLife() <= 0.0f) {
-			lastCheckedParticle = i;
+			lastDeadParticle = i;
 			return i;
 		}
 	}
-	// Otherwise serach from the begining
-	for (GLuint i = 0; i < lastCheckedParticle; ++i) {
-		if (ParticleObjectList[i]->getLife() <= 0.0f) {
-			lastCheckedParticle = i;
-			return i;
-		}
-	}
-	// If there are no dead particles use the first one in the list
-	lastCheckedParticle = 0;
+	// If there are no dead particles, use the first one in the list
+	lastDeadParticle = 0;
 	return 0;
 }
 
@@ -102,10 +98,16 @@ void Game::respawnParticle(GameObject * particle)
 	particle->setRotation(radians(rand() % (90)/1.0f), radians(rand() % (90) / 1.0f), radians(rand() % (90) / 1.0f));
 	particle->setPositionVec3(vec3(((rand() % 100 + -50)/100.0f),0.5, ((rand() % 100 + -50) / 100.0f)));
 	particle->resetLife();
-	 //range + start point (float(rand() % 90))
+	
 }
 
-void Game::gameInit()
+
+
+/* -------------------
+Particle Emitter
+----------------------*/
+
+void Game::init()
 {
 
 	// Create SDL window
@@ -303,18 +305,14 @@ void Game::gameInit()
 	initParticles();
 }
 
-void Game::gameLoop()
+void Game::loop()
 {
 
-	gameInit();
-
-	
+	init();
 
 	// Game loop
 	while (running)
 	{
-	
-
 		const int FPS = 60;
 		const int frameDelay = 1000 / FPS;
 
@@ -328,24 +326,30 @@ void Game::gameLoop()
 			SDL_Delay(frameDelay - deltaTime);
 		}
 
-		gameInputEvents();
+		inputEvents();
 
-		gameUpdate();
+		update();
 		
-		gameRender();
+		render();
 		
 	}
 
-	gameClean();
+	clean();
 }
 
-void Game::gameUpdate()
+void Game::update()
 {
-
+	// Update camera position
 	cameraPosition = camera->getPosition();
 
 	// Update particle generator
 	updateParticles(deltaTime);
+
+	// Handle keyboard input
+	playerController.keyboardControls(deltaTime);
+
+	// Handle joystick input
+	playerController.joystickControls();
 
 	if (window->getIsFullscreen()){
 		mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
@@ -391,13 +395,6 @@ void Game::gameUpdate()
 		camera->moveYAxis(-walkSpeed * deltaTime);
 	}
 
-	// Handle keyboard input
-	playerController.keyboardControls(deltaTime);
-
-	// Handle joystick input
-	playerController.joystickControls();
-
-
 	// Update objects
 	for (GameObject * obj : TreeList){
 		obj->update();
@@ -409,15 +406,10 @@ void Game::gameUpdate()
 
 }
 
-void Game::gameRender()
+void Game::render()
 {
 
-	
-
-
-	
-
-	// Culls the clockwise facing side of the triangle
+	// Culls the clockwise facing side of the triangles
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -426,35 +418,34 @@ void Game::gameRender()
 	// Linking shaders
 	glUseProgram(programID);
 
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, specularTextureID);
 
 	// Get uniforms from shader
 	GLuint modelMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
 	GLuint viewMatrixLocation = glGetUniformLocation(programID, "viewMatrix");
 	GLuint projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-	GLint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
-	GLint diffuseTextureTreeLocation = glGetUniformLocation(programID, "diffuseTextureTree");
-	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture"); 
 
-	GLint directionalLightDiffuseColourLocation = glGetUniformLocation(programID, "directionalLight.diffuseColour");
-	GLint directionalLightSpecularColourLocation = glGetUniformLocation(programID, "directionalLight.specularColour");
+	GLint diffuseTextureLocation = glGetUniformLocation(programID, "diffuseTexture");
+	GLint specularTextureLocation = glGetUniformLocation(programID, "specularTexture"); 
 	
 	GLint ambientMaterialColourLocation = glGetUniformLocation(programID, "ambientMaterialColour");
 	GLint diffuseMaterialColourLocation = glGetUniformLocation(programID, "diffuseMaterialColour");
 	GLint specularMaterialColourLocation = glGetUniformLocation(programID, "specularMaterialColour");
 	GLint specularMaterialPowerLocation = glGetUniformLocation(programID, "specularMaterialPower");
-
-	GLint lightIntensityLocation = glGetUniformLocation(programID, "lightIntensity");
 	
 	GLint ambientLightColourLocation = glGetUniformLocation(programID, "ambientLightColour");
 	GLint diffuseLightColourLocation = glGetUniformLocation(programID, "diffuseLightColour");
 	GLint specularLightColourLocation = glGetUniformLocation(programID, "specularLightColour");
 
+	GLint directionalLightDiffuseColourLocation = glGetUniformLocation(programID, "directionalLight.diffuseColour");
+	GLint directionalLightSpecularColourLocation = glGetUniformLocation(programID, "directionalLight.specularColour");
+
 	GLint lightDirectionLocation = glGetUniformLocation(programID, "directionalLight.direction");
 
 	GLint cameraPositionLocation = glGetUniformLocation(programID, "cameraPosition");
 
+	GLint lightIntensityLocation = glGetUniformLocation(programID, "lightIntensity");
+
+	
 	const int MAX_NO_OF_POINT_LIGHTS = 8;
 	GLint pointLightDiffuseColourLocations[MAX_NO_OF_POINT_LIGHTS];
 	GLint pointLightSpecularColourLocations[MAX_NO_OF_POINT_LIGHTS];
@@ -473,16 +464,17 @@ void Game::gameRender()
 		pointLightPositionLocations[i] = glGetUniformLocation(programID, characterBuffer);
 	}
 
-	
 	GLint numberOfPointLightsLocation = glGetUniformLocation(programID, "numberOfPointLights");
 
-	// Send the uniforms across
+	// Send the uniforms across to shader for the MVP variables
 	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(modelMatrix));
 	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
 	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
+
+	// Send uniforms for Textures and Lighting across
 	glUniform1i(diffuseTextureLocation, 0);
 	glUniform1i(specularTextureLocation, 1);
-	glUniform1i(diffuseTextureTreeLocation, 2);
+	//glUniform1i(diffuseTextureTreeLocation, 2);
 
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
 	glUniform4fv(diffuseMaterialColourLocation, 1, value_ptr(diffuseMaterialColour));
@@ -490,15 +482,11 @@ void Game::gameRender()
 
 	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
 
-	glUniform4fv(directionalLightDiffuseColourLocation, 1, glm::value_ptr(diffuseLightColour));
-	glUniform4fv(directionalLightSpecularColourLocation, 1, glm::value_ptr(specularLightColour));
-
 	glUniform1f(specularMaterialPowerLocation, specularMaterialPower);
-
-	glUniform1f(lightIntensityLocation, lightIntensity);
 
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
+	// Send uniform values for point lights
 	for (int i = 0; i < PointLights.size(); i++)
 	{
 		glUniform4fv(pointLightDiffuseColourLocations[i], 1, value_ptr(PointLights[i].DiffuseColour));
@@ -507,13 +495,25 @@ void Game::gameRender()
 	}
 
 	glUniform1i(numberOfPointLightsLocation, PointLights.size());
-	
-	// Create a light flickering effect from the campfire
-	flickerThreshold += (rand() % 10 + 1)* deltaTime;
 
-	if (flickerThreshold > 600){
+	glUniform4fv(directionalLightDiffuseColourLocation, 1, glm::value_ptr(diffuseLightColour));
+	glUniform4fv(directionalLightSpecularColourLocation, 1, glm::value_ptr(specularLightColour));
+
+	// Send uniform values for Light Intensity to be used for the flicker effect
+	glUniform1f(lightIntensityLocation, lightIntensity);
+	
+
+
+	/*--------------------
+	Light Flicker effect
+	---------------------*/
+
+	// Create a light flickering effect from the campfire
+	flickerUpdate += (rand() % 10 + 1)* deltaTime;
+
+	if (flickerUpdate > flickerThreshold){
 		lightFlicker = true;
-		flickerThreshold = 0;
+		flickerUpdate = 0;
 	}
 
 	if (lightFlicker == true){
@@ -522,6 +522,10 @@ void Game::gameRender()
 		lightFlicker = false;
 	}
 
+
+	/*----------------
+	Model Rendering
+	----------------*/
 
 	if (barrel){
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(barrel->modelMatrix));
@@ -596,7 +600,7 @@ void Game::gameRender()
 
 }
 
-void Game::gameInputEvents()
+void Game::inputEvents()
 {
 	
 	// Poll for the events which have happened in this frame
@@ -770,7 +774,7 @@ void Game::gameInputEvents()
 	}
 }
 
-void Game::gameClean()
+void Game::clean()
 {
 	glDeleteProgram(programID);
 	glDeleteProgram(programID_Fire);
