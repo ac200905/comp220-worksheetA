@@ -42,6 +42,7 @@ uniform int numberOfPointLights;                                           //
 
 uniform vec4 ambientLightColour;
 
+// The number of different shades of light on the cel shaded model
 const float levels = 4.0;
 
 
@@ -49,9 +50,12 @@ vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 
 {
 	float nDotl=clamp(dot(vertexNormalOut,normalize(-lightDirection)),0.0,1.0);
 
-	float brightness = max(nDotl, 0.0);
-	float level = floor(brightness * levels);
-	brightness = level / levels;
+	// Restricts the surface brightness value to one of only a few levels, causing discrete levels of brightness instead of a smooth gradient. 
+	// This causes a toon shading effect.
+	float brightness = max(nDotl, 0.0); // A brightness value between 1 and zero
+	float level = floor(brightness * levels);   // The brightness multiplied by number of total levels rounded down to the nearest int gives
+											    // you the the level that brightness value is on.
+	brightness = level / levels; // The new brightness lower limit level between 0 and 1.
 
 	vec3 halfWay=normalize(-lightDirection+viewDirection);
 	float nDoth=pow(clamp(dot(vertexNormalOut,halfWay),0.0,1.0),specularMaterialPower);
@@ -71,6 +75,7 @@ vec4 CalculatePointLight(int currentLightIndex,vec4 diffuseTextureColour,vec4 sp
 									lightDirection,
 									diffuseTextureColour,specularTextureColour);
 
+	// As lightIntensity changes in game update, the strength of the light changeson the models
 	float attenuation=1.0/(1.0+0.1*lightIntensity*0.001*lightDistance+0.01*lightDistance*lightDistance);
 
 	return colour*attenuation;

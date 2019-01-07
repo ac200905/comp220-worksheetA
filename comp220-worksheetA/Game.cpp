@@ -25,15 +25,15 @@ void Game::updateParticles(GLfloat deltaTime)
 	for (GLuint i = 0; i < amount; ++i)
 	{
 		GameObject * particle = ParticleObjectList[i];
-		particle->decreaseLife(deltaTime); // reduce life
+		particle->decreaseLife(deltaTime); // reduce life of particle
 		if (particle->getLife() > 0.0f)
 		{	// particle still alive: update particle
 			vec3 currentPos = particle->getPosition();
-			vec3 objectDirection = vec3(0,1,0); //up
+			
 			currentPos = currentPos + (objectDirection / speed * deltaTime); // increase the division to slow down the movement
 			particle->setPositionVec3(currentPos);
 
-			vec3 scaleBack = vec3(0.0002f);
+			
 			vec3 currentScale = particle->getScale();
 			currentScale = (currentScale - scaleBack * deltaTime) ;
 			particle->setScaleVec3(currentScale);
@@ -165,6 +165,17 @@ void Game::gameInit()
 	programID = LoadShaders("vertBlinnPhongPL.glsl", "fragBlinnPhongPL.glsl");
 	programID_Fire = LoadShaders("vertTextured.glsl", "fragTextured.glsl");
 
+
+	// Set up list of point lights
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
+	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
+
 	// Set up new game objects
 	tree1 = new GameObject();
 	tree1->giveMesh(treeMesh);
@@ -258,7 +269,7 @@ void Game::gameInit()
 	if (tent) {
 		tent->scale = vec3(0.05);
 		tent->position = vec3(6, 0.5, -4);
-		tent->setRotation(radians(-90.0f), 0, radians(-45.0f));
+		tent->setRotation(radians(-90.0f), 0, radians(-70.0f));
 	}
 	if (rock) {
 		rock->scale = vec3(0.5);
@@ -336,59 +347,47 @@ void Game::gameUpdate()
 	// Update particle generator
 	updateParticles(deltaTime);
 
-	if (window->getIsFullscreen())
-	{
+	if (window->getIsFullscreen()){
 		mat4 MVPMatrix = camera->getFullscreenProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 	}
-	if (!window->getIsFullscreen())
-	{
+	if (!window->getIsFullscreen()){
 		// Calculate MVP matrix
 		mat4 MVPMatrix = camera->getProjectionMatrix() * camera->getViewMatrix() * modelMatrix;
 	}
 
 	// Changing camera pitch and yaw
-	if (rotateCameraLeft == true)
-	{
+	if (rotateCameraLeft == true){
 		camera->increaseYaw(-pitchSpeed * deltaTime);
 	}
-	if (rotateCameraRight == true)
-	{
+	if (rotateCameraRight == true){
 		camera->increaseYaw(pitchSpeed * deltaTime);
 	}
-	if (rotateCameraUp == true)
-	{
+	if (rotateCameraUp == true){
 		camera->increasePitch(-yawSpeed * deltaTime);
 	}
-	if (rotateCameraDown == true)
-	{
+	if (rotateCameraDown == true){
 		camera->increasePitch(yawSpeed * deltaTime);
 	}
 
 	// Strafing and moving towards or away from target
-	if (moveCameraLeft == true)
-	{
+	if (moveCameraLeft == true){
 		camera->moveXAxis(walkSpeed * deltaTime);
 	}
-	if (moveCameraRight == true)
-	{
+	if (moveCameraRight == true){
 		camera->moveXAxis(-walkSpeed * deltaTime);
 	}
-	if (moveCameraForward == true)
-	{
+	if (moveCameraForward == true){
 		camera->moveZAxis(walkSpeed * deltaTime);
 	}
-	if (moveCameraBack == true)
-	{
+	if (moveCameraBack == true){
 		camera->moveZAxis(-walkSpeed * deltaTime);
 	}
 
 	// Moving camera up/down on the y axis
-	if (moveCameraUp == true)
-	{
+	if (moveCameraUp == true){
 		camera->moveYAxis(walkSpeed * deltaTime);
 	}
-	if (moveCameraDown == true)
-	{
+	if (moveCameraDown == true){
 		camera->moveYAxis(-walkSpeed * deltaTime);
 	}
 
@@ -413,30 +412,10 @@ void Game::gameUpdate()
 void Game::gameRender()
 {
 
-	// Materials
-	glm::vec4 ambientMaterialColour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec4 diffuseMaterialColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-	glm::vec4 specularMaterialColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-	// Light
-	glm::vec4 ambientLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 diffuseLightColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	glm::vec4 specularLightColour = glm::vec4(0.0f);
-
-	float specularMaterialPower = 10000.0f;
-
-
-	//Point lights
-	std::vector<PointLight> PointLights;
 	
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,5.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
-	PointLights.push_back({ glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec4(1.0f,1.0f,1.0f,1.0f),glm::vec3(0.0f,7.0f,0.0f) });
+
+
+	
 
 	// Culls the clockwise facing side of the triangle
 	glEnable(GL_CULL_FACE | GL_DEPTH_TEST);
@@ -532,17 +511,14 @@ void Game::gameRender()
 	// Create a light flickering effect from the campfire
 	flickerThreshold += (rand() % 10 + 1)* deltaTime;
 
-	if (flickerThreshold > 600)
-	{
+	if (flickerThreshold > 600){
 		lightFlicker = true;
 		flickerThreshold = 0;
 	}
 
-	if (lightFlicker == true)
-	{
+	if (lightFlicker == true){
 		lightIntensity = (rand() % 3000 + 3000); //range + start point
 		glUniform1f(lightIntensityLocation, lightIntensity);
-
 		lightFlicker = false;
 	}
 
@@ -608,11 +584,9 @@ void Game::gameRender()
 		GLuint projectionMatrixLocation = glGetUniformLocation(programID_Fire, "projectionMatrix");
 
 		// Send the uniforms across
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(modelMatrix));
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(p->modelMatrix));
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, value_ptr(camera->getViewMatrix()));
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, value_ptr(camera->getProjectionMatrix()));
-
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, value_ptr(p->modelMatrix));
 		glUniform1i(diffuseTextureLocation, 0);
 		
 		p->render();

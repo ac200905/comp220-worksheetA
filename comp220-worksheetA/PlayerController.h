@@ -33,5 +33,7 @@ private:
 	//How fast the player can move
 	float moveSpeed;
 
+	float mouseSensitivity = 0.005f;
+
 	float joySpeed;
 };

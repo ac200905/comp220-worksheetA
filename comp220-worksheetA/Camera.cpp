@@ -66,8 +66,8 @@ void Camera::setProjectionMatrix()
 {
 	projectionMatrix = perspective
 	(
-		radians(FoV), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
-		(float)global::SCREEN_WIDTH / (float)global::SCREEN_HEIGHT,   // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960
+		radians(FoV), // The horizontal Field of View.
+		(float)global::SCREEN_WIDTH / (float)global::SCREEN_HEIGHT,   // Aspect Ratio. Depends on the window size.
 		nearClip, // Near clipping plane.
 		farClip // Far clipping plane. For objects in the distance.
 	);
@@ -77,8 +77,8 @@ void Camera::setFullscreenProjectionMatrix()
 {
 	projectionMatrix = perspective
 	(
-		radians(FoV), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
-		(float)global::FULLSCREEN_WIDTH / (float)global::FULLSCREEN_HEIGHT,   // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960
+		radians(FoV), // The horizontal Field of View.
+		(float)global::FULLSCREEN_WIDTH / (float)global::FULLSCREEN_HEIGHT,   // Aspect Ratio. Depends on the window size.
 		nearClip, // Near clipping plane.
 		farClip // Far clipping plane. For objects in the distance.
 	);
@@ -99,14 +99,14 @@ void Camera::calculateCameraRotation()
 {
 	vec3 front;
 	vec3 direction;
-
-	//std::cout << "yaw : " << yaw << ", " << "Pitch : " << pitch << "\n";
-	front.x = cos(radians(yaw)) * sin(radians(pitch));
-	front.y = cos(radians(pitch)) * -1; // * -1 to inverse pitch for mouse movement
-	front.z = sin(radians(yaw)) * sin(radians(pitch));
+	// x and z axis deal with yaw (side to side)
+	// y deals with pitch (up and down)
+	//front.x = cos(radians(yaw)) * sin(radians(pitch));
+	//front.y = cos(radians(pitch)) * -1; // -1 to invert pitch in game
+	//front.z = sin(radians(yaw)) * sin(radians(pitch));
 
 	direction.x = cos(radians(pitch)) * cos(radians(yaw));
-	direction.y = sin(radians(pitch)) * -1; // * -1 to inverse pitch for mouse movement
+	direction.y = sin(radians(pitch)) * -1; // -1 to invert pitch in game
 	direction.z = cos(radians(pitch)) * sin(radians(yaw));
 
 	target = normalize(direction);

@@ -72,7 +72,7 @@ public:
 
 	// Index of the last particle
 	GLuint lastCheckedParticle = 0;
-
+	
 private:
 
 	float deltaTime;
@@ -83,6 +83,9 @@ private:
 	float walkSpeed = 0.005f;
 
 	float lightIntensity;
+
+	vec3 objectDirection = vec3(0, 1, 0); //up
+	vec3 scaleBack = vec3(0.0002f);
 
 	//std::map<std::string, bool> ControlActions;
 	//ControlActions["rotateCameraLeft"] = false;
@@ -146,6 +149,7 @@ private:
 	std::vector<GameObject*> TreeList;
 	std::vector<GameObject*> MiscObjectList;
 	std::vector<GameObject*> ParticleObjectList;
+	std::vector<PointLight> PointLights;
 
 	GLuint diffuseTextureID_Grass;
 	GLuint diffuseTextureID_Barrel;
@@ -169,7 +173,17 @@ private:
 
 	mat4 MVPMatrix;
 
-	vec4 ambientMaterialColour;
+	// Materials
+	vec4 ambientMaterialColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	vec4 diffuseMaterialColour = vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Light
+	vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 specularLightColour = vec4(0.0f);
+
+	float specularMaterialPower = 10000.0f;
 
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;

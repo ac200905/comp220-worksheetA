@@ -22,18 +22,15 @@ public:
 	void setProjectionMatrix();
 	void setFullscreenProjectionMatrix();
 
-	mat4 getViewMatrix()
-	{
+	mat4 getViewMatrix(){
 		return viewMatrix;
 	}
 
-	mat4 getProjectionMatrix()
-	{
+	mat4 getProjectionMatrix(){
 		return projectionMatrix;
 	}
 
-	mat4 getFullscreenProjectionMatrix()
-	{
+	mat4 getFullscreenProjectionMatrix(){
 		return projectionMatrix;
 	}
 
@@ -45,72 +42,59 @@ public:
 
 
 	//Specialised setters to increase pitch and yaw instead of just replacing with new values
-	void increasePitch(float Pitch)
-	{
+	void increasePitch(float Pitch){
 		pitch += Pitch;
 	}
 
-	void increaseYaw(float Yaw)
-	{
+	void increaseYaw(float Yaw){
 		yaw += Yaw;
 	}
 
-	void moveXAxis(float Position)
-	{
+	void moveXAxis(float Position){
 		setPosition(position - (normalize(cross(target,getUpVector()))* Position));
 		setViewMatrix();
 	}
 
-	void moveZAxis(float Position)
-	{
+	void moveZAxis(float Position){
 		setPosition(position + (Position * target));
 		setViewMatrix();
 	}
 
-	void moveYAxis(float Position)
-	{
+	void moveYAxis(float Position){
 		setPosition(position + (vec3(0, 1, 0) * Position));
 		setViewMatrix();
 	}
 
-	vec3 getPosition()
-	{
+	vec3 getPosition(){
 		return position;
 	}
 
-	vec3 getTarget()
-	{
+	vec3 getTarget(){
 		return target;
 	}
 
-	vec3 getUpVector()
-	{
+	vec3 getUpVector(){
 		return upVector;
 	}
 
-	void setPosition(vec3 Position)
-	{
+	void setPosition(vec3 Position){
 		Position.y = 3; // to simulate walking
 		position = Position;
 	}
 
-	void setTarget(vec3 Target)
-	{
+	void setTarget(vec3 Target){
 		target = Target;
 	}
 
-	void setPitch(float Pitch)
-	{
+	void setPitch(float Pitch){
 		pitch = Pitch;
 	}
 
-	void setYaw(float Yaw)
-	{
+	void setYaw(float Yaw){
 		yaw = Yaw;
 	}
 
-	void setFoV(float fov)
-	{
+	void setFoV(float fov){
 		FoV = fov;
 	}
 
