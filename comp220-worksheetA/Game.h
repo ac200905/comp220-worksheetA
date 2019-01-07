@@ -86,15 +86,13 @@ private:
 
 	float lightIntensity;
 
-	vec3 objectDirection = vec3(0, 1, 0); //up
+	// Direction for particles to move (up)
+	vec3 objectDirection = vec3(0, 1, 0); 
+
+	// Amount to decrease particle size each frame
 	vec3 scaleBack = vec3(0.0002f);
 
-	//std::map<std::string, bool> ControlActions;
-	//ControlActions["rotateCameraLeft"] = false;
-
-	//detect buttom press
-	//ControlActions["rotateCameraLeft"] = true;
-
+	// Gamepad bools
 	bool rotateCameraLeft = false;
 	bool rotateCameraRight = false;
 	bool rotateCameraUp = false;
@@ -110,12 +108,9 @@ private:
 
 	// Create SDL window
 	Window *window;
-	//SDL_Window* mainWindow;
 
 	// Initalise Open_GL and GLEW
 	GLSetup *glSetup;
-	// Get Open_GL context.
-	//SDL_GLContext gl_Context;
 
 	SDL_Event event;
 
@@ -148,11 +143,13 @@ private:
 	GameObject* tent;
 	GameObject* fire;
 
+	// Object lists
 	std::vector<GameObject*> TreeList;
 	std::vector<GameObject*> MiscObjectList;
 	std::vector<GameObject*> ParticleObjectList;
 	std::vector<PointLight> PointLights;
 
+	// Texture IDs
 	GLuint diffuseTextureID_Grass;
 	GLuint diffuseTextureID_Barrel;
 	GLuint diffuseTextureID_Lamp;
@@ -164,16 +161,14 @@ private:
 	GLuint diffuseTextureID;
 	GLuint specularTextureID;
 
-
-
+	// Program ID for models
 	GLuint programID;
+
+	// Program ID for fire particle models
 	GLuint programID_Fire;
 
-	GLuint MVPLocation;
-
+	// Model matrix
 	mat4 modelMatrix;
-
-	mat4 MVPMatrix;
 
 	// Materials
 	vec4 ambientMaterialColour = vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -185,13 +180,12 @@ private:
 	vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vec4 specularLightColour = vec4(0.0f);
 
+	// Increase to decrease the amount of spec lighting
 	float specularMaterialPower = 10000.0f;
 
 	GLuint modelMatrixLocation;
 	GLuint viewMatrixLocation;
 	GLuint projectionMatrixLocation;
-
-	GLint baseTextureLocation;
 
 	vec3 cameraPosition;
 
