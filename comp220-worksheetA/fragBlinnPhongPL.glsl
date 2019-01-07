@@ -1,5 +1,7 @@
 #version 330 core
 
+// http://ogldev.atspace.co.uk/www/tutorial20/tutorial20.html
+
 struct DirectionalLight
 {
 	vec4 diffuseColour;
@@ -46,6 +48,8 @@ const float levels = 4.0;
 
 vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 lightDirection,vec4 diffuseTextureColour,vec4 specularTextureColour)
 {
+	//calculate the dot product between surface normal (vertexNormalOut) and the light direction
+	//calculates the reflectiveness of the surface based on the light direction and surface normal
 	float nDotl=clamp(dot(vertexNormalOut,normalize(-lightDirection)),0.0,1.0);
 
 	// Restricts the surface brightness value to one of only a few levels, causing discrete levels of brightness instead of a smooth gradient. 
@@ -64,8 +68,8 @@ vec4 CalculateLightColour(vec4 diffuseLightColour,vec4 specularLightColour,vec3 
 
 vec4 CalculatePointLight(int currentLightIndex,vec4 diffuseTextureColour,vec4 specularTextureColour)
 {
-	vec3 lightDirection=worldVertexPosition-pointLights[currentLightIndex].position;
-	float lightDistance=length(lightDirection);
+	vec3 lightDirection=worldVertexPosition-pointLights[currentLightIndex].position; // finds the vector from the point light to the surface
+	float lightDistance=length(lightDirection); // The distance from the point light to the pixel of the surface
 	lightDirection=normalize(lightDirection);
 
 	vec4 colour=CalculateLightColour(pointLights[currentLightIndex].diffuseColour,
