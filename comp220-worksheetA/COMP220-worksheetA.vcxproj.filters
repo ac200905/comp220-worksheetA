@@ -118,11 +118,7 @@
     <None Include="fragTextured.glsl" />
     <None Include="vertBlinnPhong.glsl" />
     <None Include="fragBlinnPhong.glsl" />
-    <None Include="vertCelShader.glsl" />
-    <None Include="fragCelShader.glsl" />
     <None Include="vertBlinnPhongPL.glsl" />
     <None Include="fragBlinnPhongPL.glsl" />
-    <None Include="vertParticle.glsl" />
-    <None Include="fragParticle.glsl" />
   </ItemGroup>
 </Project>

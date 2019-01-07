@@ -197,14 +197,10 @@ copy ..\Libraries\assimp-4.1.0\bin\x64\assimp-vc140-mt.dll "$(OutDir)\assimp-vc1
   <ItemGroup>
     <None Include="fragBlinnPhong.glsl" />
     <None Include="fragBlinnPhongPL.glsl" />
-    <None Include="fragCelShader.glsl" />
-    <None Include="fragParticle.glsl" />
     <None Include="fragShader.glsl" />
     <None Include="fragTextured.glsl" />
     <None Include="vertBlinnPhong.glsl" />
     <None Include="vertBlinnPhongPL.glsl" />
-    <None Include="vertCelShader.glsl" />
-    <None Include="vertParticle.glsl" />
     <None Include="vertShader.glsl" />
     <None Include="vertTextured.glsl" />
   </ItemGroup>
